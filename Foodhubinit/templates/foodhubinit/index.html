@@ -1,0 +1,111 @@
+{% load static %}
+<head>
+<link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<div class="mainNav">
+<div class="col-xs-12">
+<div style="max-width: 150px;height: 100%;display: inline-block;">
+<h2 class="pull-left mainlogo">Foodhub</h2>
+</div>
+<div class="pull-right" style="height: 100%;display: inline-block;">
+<a href="{% url 'login' %}" class ="btn btn-lg" style="font-family: Arial black; color: white;float:left;margin-top:4%">login</a>
+<a href="{% url 'signup' %}"  class ="btn btn-lg" style="border:1px solid white ; border-radius:25px;font-family: Arial black; color: white;float:left;margin-top:4%">Signup</a>
+</div>
+</div>
+</div>
+<body onload="initialize()">
+<div class="locationContainer">
+	<div class="my-row special">
+        <div class="v-m">
+        	<div id="findLoc" class="center-block"> 
+                            <h2 class="text-center" style="color: white; font-family: Arial Black">Order your food right from your place</h2>
+                            <div class="row center-block">
+                            <div  class="col-sm-3"></div>
+                            <div  class="col-sm-8">
+                            <input class="form-control center-block input-lg" style="width:60%;display: inline;font-family:Arial, FontAwesome" id="autocomplete" placeholder="&#xf041; Enter your address" onFocus="geolocate()" type="text">
+                            <button class="btn btn-primary btn-lg center-block" style ="background: red;display: inline;"> Find Restaurants</button>
+                            </div>
+                            </div>
+          	</div>
+        </div>
+    </div>
+    <span class="attribution" style="color: white; font-family:Arial Black">Courtesy- freefoodphotos.com</span>  
+</div>
+<div id ="howToContainer">
+	<h3 class="text-center"> How it works</h3>
+	<div>
+		<div class="col-sm-4">
+			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden">
+			<img src="{% static "Foodhub/images/hotel.jpg" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="hotel image" >
+			</div>
+			<br>
+			<h4 class="text-center" style="color: white;font-family:Arial Black">Select a Restaurant from your location</h4>
+		</div>
+		<div class="col-sm-4">
+			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden">
+			<img src="{% static "Foodhub/images/food.png" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="food image" >
+			</div>
+			<br>
+			<h4 class="text-center" style="color: white;font-family:Arial Black">Select your choice and place your order</h4>
+		</div>
+		<div class="col-sm-4">
+			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden;background: white">
+			<img src="{% static "Foodhub/images/delivery.png" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="deliver image" >
+			</div>
+			<br>
+			<h4 class="text-center" style="color: white;font-family:Arial Black">Get your food deliverd at your doorstep</h4>
+		</div>
+	</div>
+</div>
+<div class="container" id="locationDisplay">
+<h3 style="font-family:Arial Black">Browse from over 10000 of restaurants across all the cities in the US</h3>
+{% if capitals %}
+{% for city in capitals|slice:":15" %}
+	<a class="displayInfo col-xs-4">{{city}}</a>
+ {% if forloop.counter|divisibleby:3%}
+ 	<br>
+ {% endif %}
+{% endfor %}
+<br>
+<a href="{% url 'listStates' %}" style="margin-top:10%">View all Cities </a>
+{% else %}
+   There are no cities to display
+{% endif %}
+</div>
+</body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+<script>
+var autocomplete;
+function initialize() {
+        autocomplete = new google.maps.places.Autocomplete(
+        (document.getElementById('autocomplete')),
+                  { types: ['geocode'] });
+              google.maps.event.addListener(autocomplete, 'place_changed', function() {
+              });  
+}
+function geolocate() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var circle = new google.maps.Circle({
+              center: geolocation,
+              radius: position.coords.accuracy
+            });
+            autocomplete.setBounds(circle.getBounds());
+          });
+        }
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"
+        async defer></script>

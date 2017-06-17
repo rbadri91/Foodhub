@@ -1,0 +1,101 @@
+.locationContainer {
+  width: 100%;
+  max-width: 100vw;
+  height:100%;
+  max-height: 100vh;
+  background:url("../images/quiche.jpg") no-repeat;
+  background-size: 100%;
+}
+
+.my-row {
+  height: 100%; }
+
+.special {
+  height: 100vh;
+  display: table;
+  width: 100%; }
+
+.v-m {
+  display: table-cell;
+  vertical-align: middle; 
+}
+.fa-cog {
+  color: black;
+}
+#howToContainer{
+	background: #569ec1;
+	overflow: hidden
+}
+.attribution{
+    position:absolute;
+    bottom:0;
+    right:0;
+    font-size:0.5em
+}
+.displayInfo{
+  background-color:  #eee;
+  /*margin-left: 20px;*/
+  margin-top: 20px;
+  box-shadow: 1px 1px 3px #888;
+  border-radius: 25px;
+  padding:10px;
+  margin-top: 10px;
+}
+#stateContainer{
+  background-color:lightgreen;
+  color:red;
+  margin-top:10%;
+  box-shadow: 1px 5px 8px #999999;
+}
+
+.mainNav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1030;
+    display: flex;
+    width: 100%;
+    height: 60px;
+    color: #FFF;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    background-color: red;
+}
+.mainlogo{
+    width: 100px;
+    height: 21px;
+    display: flex;
+    font-family: Arial black;
+    align-items: center;
+    color: white;
+}
+.form {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 400px;
+  padding: 30px;
+  text-align: left;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+.my-row{
+  height:100%;
+}
+.special {height:100vh; display:table;width:100%;}
+.new.text-center {
+    height:100%;
+    background: #569ec1;
+}
+.v-m {display:table-cell;vertical-align:middle}
+.form input {
+  height: auto;
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}

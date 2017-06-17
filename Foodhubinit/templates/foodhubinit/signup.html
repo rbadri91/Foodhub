@@ -1,0 +1,35 @@
+{% block content %}
+
+{% load static %}
+<head>
+<link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+</head>
+
+  <div class="new text-center">
+    <div class="my-row special">
+      <div class="v-m">
+        <div class ="form center-block ">
+            <h2>Sign up</h2>
+            <form method="post">
+              {% csrf_token %}
+              {% for field in form %}
+                <p>
+                  {{ field.label_tag }}<br>
+                  {{ field }}
+                  {% if field.help_text %}
+                    <small style="color: grey">{{ field.help_text }}</small>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <p style="color: red">{{ error }}</p>
+                  {% endfor %}
+                </p>
+              {% endfor %}
+              <button class="btn btn-info btn-sm" type="submit">Sign up</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>     
+{% endblock %}
