@@ -4,18 +4,31 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
 </head>
-<div class="mainNav">
-<div class="col-xs-12">
-<div style="max-width: 150px;height: 100%;display: inline-block;">
-<h2 class="pull-left mainlogo">Foodhub</h2>
-</div>
-<div class="pull-right" style="height: 100%;display: inline-block;">
-<a href="{% url 'login' %}" class ="btn btn-lg" style="font-family: Arial black; color: white;float:left;margin-top:4%">login</a>
-<a href="{% url 'signup' %}"  class ="btn btn-lg" style="border:1px solid white ; border-radius:25px;font-family: Arial black; color: white;float:left;margin-top:4%">Signup</a>
-</div>
-</div>
-</div>
+<nav class="navbar navbar-fixed-top navbar-inverse" style="background: transparent;border: none;top:3%">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand mainlogo" style="color: white;font-size: 300%">Foodhub</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
+        <li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
+        <li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
+        <li><a id="logout" href="{% url 'logout' %}" style="display:none">Logout</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right"></ul>
+    </div>
+  </div>
+</nav>
 <body onload="initialize()">
 <div class="locationContainer">
 	<div class="my-row special">

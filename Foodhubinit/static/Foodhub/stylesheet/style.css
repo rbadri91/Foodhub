@@ -65,9 +65,12 @@
     width: 100px;
     height: 21px;
     display: flex;
-    font-family: Arial black;
+    font-family: 'Allan', Helvetica, Arial, sans-serif;
+    font-size: 70px;
+    line-height: 75px;
     align-items: center;
     color: white;
+    font-size: 200%;
 }
 .form {
   position: relative;
@@ -85,6 +88,8 @@
 .new.text-center {
     height:100%;
     background: #569ec1;
+    min-height: 100%;
+    height:auto !important; 
 }
 .v-m {display:table-cell;vertical-align:middle}
 .form input {
@@ -98,4 +103,13 @@
   padding: 15px;
   box-sizing: border-box;
   font-size: 14px;
+}
+.signupText{
+  color: white !important;
+  font-family: Arial black;
+  border:1px solid white;
+  display: flex !important;
+  border-radius:25px;
+  align-items:center !important;
+  height:40px
 }

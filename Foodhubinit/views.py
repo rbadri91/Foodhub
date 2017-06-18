@@ -83,3 +83,9 @@ def listStates(request):
 
 def cities(request,state):
 	pass
+
+def custom_login(request):
+    if request.user.is_authenticated():
+        return redirect('home')
+    else:
+        return login(request)	
