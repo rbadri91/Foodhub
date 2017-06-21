@@ -1,5 +1,6 @@
 {% load static %}
 <head>
+<title>{{city}} Restauarants</title>
 <meta name="viewport" content="width=device-width, initial-scale=0.8" />
 <link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -8,6 +9,7 @@
 <link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
 </head>
+<body style="background: #569ec1;" onload="initialize()">
 <nav class="navbar navbar-fixed-top navbar-inverse" style="background: transparent;border: none;top:3%">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -30,65 +32,105 @@
     </div>
   </div>
 </nav>
-<body onload="initialize()">
 <div class="locationContainer">
-	<div class="my-row special">
-        <div class="v-m">
-        	<div id="findLoc" class="center-block"> 
-                            <h2 class="text-center" style="color: white; font-family: Arial Black">Order your food right from your place</h2>
+  <div class="my-row special">
+    <div class="v-m">
+    	<div id="locContainer" class="center-block"> 
+                            <h2 class="text-center" style="font-family: Arial Black">Find out who delivers</h2>
+                            <br>
+                            <br>
                             <div class="row center-block">
-                            <div  class="col-sm-3"></div>
-                            <div  class="col-sm-8">
-                            <input class="form-control center-block input-lg" style="width:60%;display: inline;font-family:Arial, FontAwesome" id="autocomplete" placeholder="&#xf041; Enter your address" onFocus="geolocate()" type="text">
-                            <button class="btn btn-primary btn-lg center-block" style ="background: red;display: inline;" onclick="handleFindRestaurants(this)"> Find Restaurants</button>
+                            <div  class="col-sm-12">
+                            <input class="form-control center-block input-lg" style="width:60%;display: inline;font-family:Arial, FontAwesome" id="autocomplete" placeholder="&#xf041; Enter your address" onFocus="geolocate()" viewstype="text">
+                            <button class="btn btn-primary btn-lg center-block" style ="background: red;display: inline;"> Find Restaurants</button>
                             </div>
                             </div>
-          	</div>
         </div>
-    </div>
-    <span class="attribution" style="color: white; font-family:Arial Black">Courtesy- freefoodphotos.com</span>  
+	</div>
+  </div>
 </div>
-<div id ="howToContainer">
-	<h3 class="text-center"> How it works</h3>
-	<div>
-		<div class="col-sm-4">
-			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden">
-			<img src="{% static "Foodhub/images/hotel.jpg" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="hotel image" >
-			</div>
-			<br>
-			<h4 class="text-center" style="color: white;font-family:Arial Black">Select a Restaurant from your location</h4>
+<div class= "row">
+<div class="col-sm-3" style="padding-right: 0">
+	<div class="browseContainer">
+		<div>
+		<h3 class="text-center" style="margin-top: 0">Browse By</h3>
 		</div>
-		<div class="col-sm-4">
-			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden">
-			<img src="{% static "Foodhub/images/food.png" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="food image" >
+		<br>
+		<h4>Nearby Cities</h4>
+		{% if nearby_cities %}
+			{% for ncity in nearby_cities %}
+			<div style="margin-bottom: 8px;">
+				<a href="{% url 'city' city_name=ncity %}">{{ncity}}</a>
 			</div>
-			<br>
-			<h4 class="text-center" style="color: white;font-family:Arial Black">Select your choice and place your order</h4>
-		</div>
-		<div class="col-sm-4">
-			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden;background: white">
-			<img src="{% static "Foodhub/images/delivery.png" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="deliver image" >
-			</div>
-			<br>
-			<h4 class="text-center" style="color: white;font-family:Arial Black">Get your food deliverd at your doorstep</h4>
-		</div>
+			{% endfor %}
+		{% endif %}
 	</div>
 </div>
-<div class="container" id="locationDisplay">
-<h3 style="font-family:Arial Black">Browse from over 10000 of restaurants across all the cities in the US</h3>
-{% if capitals %}
-{% for city in capitals|slice:":15" %}
-	<a href="{% url 'city' city_name=city %}" class="displayInfo col-xs-4">{{city}}</a>
- {% if forloop.counter|divisibleby:3%}
- 	<br>
- {% endif %}
-{% endfor %}
-<br>
-<a href="{% url 'listStates' %}" style="margin-top:10%">View all Cities </a>
-{% else %}
-   There are no cities to display
-{% endif %}
+<div class="col-sm-9" style="background: white; padding-left: 0">
+{% for restaurant in restaurants %}
+<div class="f-row">
+	<div class="col-sm-6">
+		<div class="imageShow">
+			<img src="{{restaurant.logoUrl}}" alt="{{restaurant.name}} logo" width = 90>
+		</div>
+		<div class="rDescription">
+			<h4>
+			<a>{{restaurant.name}}</a>
+			</h4>
+			<div style= "text-overflow: ellipsis;overflow: hidden;width:150px;white-space: nowrap;">{{restaurant.foodTypes|join:","}}</div>
+			<div>
+				{{restaurant.streetAddress}},{{restaurant.city}},{{restaurant.state}}
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+	<div class="restInfo ">
+		{% if city in ratings %}
+			<div class="col-sm-3 rating">{{ratings.city}}</div>
+		{% else %}
+			<div class="col-sm-3 rating">No Ratings</div>
+		{% endif %}
+		<div class="col-sm-3 minDelivery">
+			<h4 class="text-center">${{restaurant.deliveryMin}}</h4>
+			<span class="text-center">Miniumum</span>
+		</div>
+		<div class="col-sm-3">
+			<h4 class="text-center">${{restaurant.deliveryPrice}}</h4>
+			<span class="text-center">Delivery Fee</span>
+		</div>
+		<div class="col-sm-3">
+			<h5 class="text-center">{{restaurant.minWaitTime}} - {{restaurant.maxWaitTime}}</h5>
+			<span class="text-center">Waiting time</span>
+		</div>
+	</div>
+	</div>
 </div>
+{% endfor %}
+{% if restaurants.has_other_pages %}
+<div class="text-center">
+  <ul class="pagination" >
+    {% if restaurants.has_previous %}
+      <li><a href="?pageNum={{ restaurants.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in restaurants.paginator.page_range %}
+      {% if restaurants.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?pageNum={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if restaurants.has_next %}
+      <li><a href="?pageNum={{ restaurants.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+ </div> 
+{% endif %}
+</div> 
+</div> 
 </body>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -99,6 +141,7 @@
 <script>
 var autocomplete;
 function initialize() {
+		console.log("in initialize");
         autocomplete = new google.maps.places.Autocomplete(
         (document.getElementById('autocomplete')),
                   { types: ['geocode'] });
@@ -106,6 +149,7 @@ function initialize() {
               });  
 }
 function geolocate() {
+		console.log("in geolocate");
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             var geolocation = {
@@ -119,12 +163,6 @@ function geolocate() {
             autocomplete.setBounds(circle.getBounds());
           });
         }
-}
-
-function handleFindRestaurants(){
-
-	var addressVal = $("#autocomplete").val();
-	location.href="findrestaurants/"+addressVal +"/";
 }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"

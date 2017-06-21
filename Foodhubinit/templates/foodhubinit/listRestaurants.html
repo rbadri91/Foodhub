@@ -1,0 +1,282 @@
+{% load static %}
+<head>
+<title>Restauarants</title>
+<meta name="viewport" content="width=device-width, initial-scale=0.8" />
+<link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css" />
+</head>
+<body style="background: #569ec1;" onload ="initialize()">
+<nav class="navbar navbar-fixed-top navbar-inverse" style="background: red">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand mainlogo" style="color: white;font-size: 300%">Foodhub</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+    <div class="col-sm-3 col-md-3"></div>
+    	<div class="col-sm-4 wrapper" style="padding-top: 1%;">
+	        <!-- <form class="navbar-form" role="search"> -->
+	            <input type="text" id ="autocomplete" class="form-control" placeholder="&#xf002;  Where do you live?" style="font-family:Arial, FontAwesome" name="q">
+	        <!-- </form> -->
+	    </div>
+      <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
+        <li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
+        <li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
+        <li><a id="logout" href="{% url 'logout' %}" style="display:none">Logout</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right"></ul>
+    </div>
+  </div>
+</nav>
+<div class="restaurantDisplay">
+<div class= "row">
+<div class="col-sm-3" style="padding-right: 0">
+<div class="s-row FeedBackContainer">
+	<div>
+		<h3 class="text-center" style="margin-top: 0">Filter</h3>
+	</div>
+	<br>
+	<div id="OrderType" style="overflow: hidden;">
+		<h4 class="text-center">I want</h4>
+			<div class="checkbox">
+			    <input type="checkbox" id= "DeliveryType" data-group-cls="btn-group-justified" data-off-active-cls="btn-warning" data-on-active-cls="btn-primary" data-on-label="Takeout" data-off-label="Delivery" data-size="small">
+		 	</div>	
+	</div>
+	<div class="Ratings">
+		<h4>Ratings</h4>
+		<div class="star-rating">
+			  <div class="star-rating__wrap">
+			    <input class="star-rating__input" id="star-rating-5" type="radio" name="rating" value="5">
+			    <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-5" title="5 out of 5 stars"></label>
+			    <input class="star-rating__input" id="star-rating-4" type="radio" name="rating" value="4">
+			    <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-4" title="4 out of 5 stars"></label>
+			    <input class="star-rating__input" id="star-rating-3" type="radio" name="rating" value="3">
+			    <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-3" title="3 out of 5 stars"></label>
+			    <input class="star-rating__input" id="star-rating-2" type="radio" name="rating" value="2">
+			    <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-2" title="2 out of 5 stars"></label>
+			    <input class="star-rating__input" id="star-rating-1" type="radio" name="rating" value="1">
+			    <label class="star-rating__ico fa fa-star-o fa-lg" for="star-rating-1" title="1 out of 5 stars"></label>
+			  </div>
+		</div>
+		
+	</div>
+	<div>
+		<h4>Sort By</h4>
+		<select class="form-control" data-style="btn-primary" id="sortOrder">
+			<option value="0">Alphabetical</option>
+			<option value="1">Rating</option>
+			<option value="2">Distance</option>
+			<option value="3"> Delivery Minutes</option>
+			<option value="3"> Delivery Fee</option>
+		</select>
+	</div>
+	<br>
+	<div class="delivertSlider">
+		<h4>Delivery Time</h4>
+		<input id="ex13" type="text" data-slider-ticks="[30, 45, 60, 75]" data-slider-ticks-snap-bounds="30" data-slider-ticks-labels='["30", "45", "60", "Any"]'/>
+	</div>
+	<br>
+	<div>
+		<h4>Cuisines</h4>
+		{% for key, value in cuisines.items %}
+			<div>
+				<label><input id={{forloop.counter}} type="checkbox"/>{{key}}-{{value}} </label>
+			</div>
+		{% endfor %}
+	</div>
+	<br>
+	<div>
+		<h4>Features</h4>
+		<div>
+				<label><input type="checkbox"/>Free Delivery </label>
+		</div>
+		<div>
+				<label><input  type="checkbox"/>Open Now </label>
+		</div>
+	</div>
+</div>
+</div>
+<div class="col-sm-9" style="background: white; padding-left: 0;min-height:100%">
+<div class="restaurantHeading">
+<div style="vertical-align: middle">
+<h3 class="text-center" style="color: white;font-family: Arial black">So Many to Choose From</h3>
+<h4 class="text-center" style="color: white;font-family: Arial black">Where would you like to order?</h4>
+</div>
+</div>
+{% for restaurant in restaurants %}
+<div class="f-row">
+	<div class="col-sm-6">
+		<div class="imageShow">
+			<img src="{{restaurant.logoUrl}}" alt="{{restaurant.name}} logo" width = 90>
+		</div>
+		<div class="rDescription">
+			<h4>
+			<a style="font-family: Arial black;" href="{% url 'restaurant' restaurant_name=restaurant.name %}">{{restaurant.name}}</a>
+			</h4>
+			<div style= "text-overflow: ellipsis;overflow: hidden;width:150px;white-space: nowrap;">{{restaurant.foodTypes|join:","}}</div>
+			<div>
+				{{restaurant.streetAddress}},{{restaurant.city}},{{restaurant.state}}
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+	<div class="restInfo ">
+		{% if city in ratings %}
+			<div class="col-sm-3 rating">{{ratings.city}}</div>
+		{% else %}
+			<div class="col-sm-3 rating">No Ratings</div>
+		{% endif %}
+		<div class="col-sm-3 minDelivery">
+			<h4 class="text-center">${{restaurant.deliveryMin}}</h4>
+			<span class="text-center">Miniumum</span>
+		</div>
+		<div class="col-sm-3">
+			{% if restaurant.deliveryPrice == 0.0 %}
+			<h5 class="text-center">Free</h5>
+			{% else %}
+			<h4 class="text-center">${{restaurant.deliveryPrice}}</h4>
+			{% endif %}
+			<span class="text-center">Delivery Fee</span>
+		</div>
+		<div class="col-sm-3">
+			<h5 class="text-center">{{restaurant.minWaitTime}} - {{restaurant.maxWaitTime}}</h5>
+			<span class="text-center">Waiting time</span>
+		</div>
+	</div>
+	</div>
+</div>
+{% endfor %}
+{% if restaurants.has_other_pages %}
+<div class="text-center">
+  <ul class="pagination" >
+    {% if restaurants.has_previous %}
+      <li><a href="?pageNum={{ restaurants.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in restaurants.paginator.page_range %}
+      {% if restaurants.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?pageNum={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if restaurants.has_next %}
+      <li><a href="?pageNum={{ restaurants.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+ </div> 
+{% endif %}
+</div>
+</div>
+</div>
+</body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-checkbox/1.4.0/bootstrap-checkbox.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script>
+
+function handleSearchLocation(){
+	var addressVal = autocomplete.getPlace().formatted_address;
+	console.log("addressVal here:",addressVal);
+	if(addressVal!=""){
+		location.href="../"+addressVal +"/";
+
+	}
+}
+$(function () {
+	$(':checkbox').checkboxpicker();
+
+	 $('.rating-select .btn').on('mouseover', function(){
+        $(this).removeClass('btn-default').addClass('btn-warning');
+        $(this).prevAll().removeClass('btn-default').addClass('btn-warning');
+        $(this).nextAll().removeClass('btn-warning').addClass('btn-default');
+    });
+
+    $('.rating-select').on('mouseleave', function(){
+        active = $(this).parent().find('.selected');
+        if(active.length) {
+            active.removeClass('btn-default').addClass('btn-warning');
+            active.prevAll().removeClass('btn-default').addClass('btn-warning');
+            active.nextAll().removeClass('btn-warning').addClass('btn-default');
+        } else {
+            $(this).find('.btn').removeClass('btn-warning').addClass('btn-default');
+        }
+    });
+
+    $('.rating-select .btn').click(function(){
+        if($(this).hasClass('selected')) {
+            $('.rating-select .selected').removeClass('selected');
+        } else {
+            $('.rating-select .selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+    document.getElementById("autocomplete").value ={{address|safe}}
+});
+
+var autocomplete;
+function initialize() {
+		console.log("in initialize");
+        autocomplete = new google.maps.places.Autocomplete(
+        (document.getElementById('autocomplete')),
+                  { types: ['geocode'] });
+              google.maps.event.addListener(autocomplete, 'place_changed', function() {
+              		handleSearchLocation();
+              });  
+}
+function geolocate() {
+		console.log("in geolocate");
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var circle = new google.maps.Circle({
+              center: geolocation,
+              radius: position.coords.accuracy
+            });
+            autocomplete.setBounds(circle.getBounds());
+          });
+        }
+}
+var delTimeMap = [30,45,60,75];
+$("#ex13").bootstrapSlider({
+    ticks: [30, 45, 60, 75],
+    ticks_labels: ['30', '45', '60', 'Any'],
+    min: 1,
+    max: delTimeMap.length - 1,
+    ticks_snap_bounds: 30,
+    value: 0,
+    slide: function(event, ui) {                        
+            $("#ex13").val(valMap[ui.value]);                
+    } 
+})
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"
+        async defer></script>
+
+

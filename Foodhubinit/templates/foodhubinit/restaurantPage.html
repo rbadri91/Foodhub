@@ -1,0 +1,306 @@
+{% load static %}
+<head>
+<title>Restauarants</title>
+<meta name="viewport" content="width=device-width, initial-scale=0.8" />
+<link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css" />
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
+</head>
+<link href="https://fonts.googleapis.com/css?family=Vollkorn:700" rel="stylesheet">
+<link rel="stylesheet" type="text/css"
+    href="https://js.api.here.com/v3/3.0/mapsjs-ui.css" />
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"
+        async defer></script> 
+<body style="background: #efefef;">
+<nav class="navbar navbar-fixed-top navbar-inverse" style="background: red">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand mainlogo" style="color: white;font-size: 300%">Foodhub</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
+        <li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
+        <li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
+        <li><a id="logout" href="{% url 'logout' %}" style="display:none">Logout</a></li>
+        <li style="padding-top: 10px;cursor: pointer;" class="pull-right">
+        <div style="font-size:300%;color:white;height:100%;padding:0 10px"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
+        </div>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right"></ul>
+    </div>
+  </div>
+</nav>
+<div class="restaurantSummary">
+
+<div class="r-row">
+		<div class="imageShow">
+			<img src="{{restaurant.logoUrl}}" alt="{{restaurant.name}} logo" width = 150>
+		</div>
+		<div class="rDescription">
+			<h4>
+			<div style="font-family: Arial black;font-size: 200%">{{restaurant.name}}</div>
+			</h4>
+			<div>{{restaurant.foodTypes|join:","}}</div>
+			<div id ="restaurantAddress">
+				{{restaurant.streetAddress}},{{restaurant.city}},{{restaurant.state}}
+			</div>
+			<div>
+				<i class="fa fa-mobile" aria-hidden="true"></i>{{restaurant.phone}}
+			</div>
+		</div>
+</div>
+<span class="attribution" style="color: white; font-family:Arial Black">Courtesy- freefoodphotos.com</span> 
+</div>
+<div class="row restsmallDesc">
+<div class="col-sm-12">
+	<div>
+		<div class="col-sm-3" style="border-right: 1px solid grey">
+			<span class="text-center center-block">Hours</span>
+			<h4 class="text-center">{{restaurant.hours.Tuesday.0}}</h4>
+			
+		</div>
+		<div class="col-sm-3 minDelivery" style="border-right: 1px solid grey">
+			<span class="text-center center-block">Delivery Minimum</span>
+			<h4 class="text-center">${{restaurant.deliveryMin}}</h4>
+			
+		</div>
+		<div class="col-sm-3" style="border-right: 1px solid grey">
+			<span class="text-center center-block">Delivery Cost</span>
+			{% if restaurant.deliveryPrice == 0.0 %}
+			<h5 class="text-center">Free</h5>
+			{% else %}
+			<h4 class="text-center">${{restaurant.deliveryPrice}}</h4>
+			{% endif %}
+			
+		</div>
+		<div class="col-sm-3">
+			<span class="text-center center-block">Waiting time</span>
+			<h5 class="text-center">{{restaurant.minWaitTime}} - {{restaurant.maxWaitTime}}</h5>
+			
+		</div>
+	</div>
+</div>
+</div>
+<div class="row optionsNav">
+<div class="menuNavSection">
+<span class="menuNav active" onclick="handleOptionClick(this)">Menu</span>
+<span class="aboutNav" onclick="handleOptionClick(this)">About</span>
+<span class="reviewNav" onclick="handleOptionClick(this)">Reviews</span>
+</div>
+</div>
+<div class="MenuLists">
+	<div class="col-xs-12 col-md-10 col-md-offset-1">
+<div class="restaurantMenuContainer">
+	{% for menu in menus %}
+		<div class="menusection" id ="menuSection{{menu.apiKey}}">
+			<div id ="menuHeader{{menu.name}}" class="s-row menuheader-portion">
+				<h3 class="menuHeading">{{menu.name}}</h3>
+			</div>
+			<div class="menuGroupContainer">
+			<div class="s-row menuItemrow">
+			{% for item in menu.items %}
+				<div class="menuitemSection">
+				<div class="menuitemsection-inner">
+					<div id="itemSection{{item.apiKey}}" class="menuite-inner-container s-row">
+							<div class="col-sm-8 menuitemName">
+								<h6><span>{{item.name}}</span></h6>
+							</div>
+							<div class="col-xs-4 menuitemprice pull-right text-right">
+								<h6 class="text-right" style="width: 100%"><span>${{item.basePrice}}+</span></h6>
+							</div>
+						<div class="col-sm-12 menuitem-desc">
+							{{item.description}}
+						</div>
+					</div>
+					</div>
+				</div>
+				{% if forloop.counter|divisibleby:2 %}
+					</div>
+					<div class="s-row menuItemrow">
+				{% endif %}
+			{% endfor %}
+			</div>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+	</div>
+</div>
+<div class="s-row aboutRestaurant">
+<div class="col-sm-12">
+	<div class="s-row">
+		<div class="col-xs-12 col-md-10 col-md-offset-1">
+			<div class="restaurantInfoContainer">
+			<h3 class="restaurantInfoHeader">Information on {{restaurant.name}}</h3>
+			<div class="restaurantDetails">
+			Cuisines: {{restaurant.foodTypes|join:","}}
+			</div>
+			<div class="restaurantLocationContainer">
+				<h3 class="s-row restaurantLocationHeader">Location</h3>
+				<div id="restaurantLocation" class="restaurantLocationMap">
+				</div>
+				<div class="addressInfo">
+				<h4>{{restaurant.streetAddress}},{{restaurant.city}},{{restaurant.state}},{{restaurant.zip}}</h4>
+				<h4>{{restaurant.phone}}
+				</h4>
+				</div>
+			</div>
+			<div class="restaurantHours">
+				<div class="hourInfoContainer">
+						<h3 class="s-row hourInfoHeader">Restaurant Hours</h3>
+					<ul class="hoursList">
+					{% for day,hours in restaurant.hours.items %}
+						<li class="dailyHoursRow">
+							<div class="day">{{day}}</div>
+							<div class="day-hours">{{hours.0}}</div>
+						</li>
+					{% endfor %}
+					</ul>
+				</div>
+			</div>
+			<div class="restaurantReview">
+				<div class="restaurantReviewContainer reviewpanel">
+				<div class="restaurantReviewInfo">
+					<div class="reviewHeading">
+						<div class="s-row reviewHeadingContent">
+							<h3>Reviews for {{restaurant.name}}</h3>
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</body>
+<script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+<script type="text/javascript" charset="UTF-8"
+    src="https://js.api.here.com/v3/3.0/mapsjs-core.js"></script>
+<script type="text/javascript" charset="UTF-8"
+    src="https://js.api.here.com/v3/3.0/mapsjs-service.js"></script>
+<script type="text/javascript" charset="UTF-8"
+    src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
+<script type="text/javascript" charset="UTF-8"
+    src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+<script type="text/javascript" charset="UTF-8"
+    src="https://js.api.here.com/v3/3.0/mapsjs-places.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+   
+<script>
+var geocoder;
+var map;
+var address;
+var latitude =0;
+var longitude =0;
+var latlanglocation =0;
+var activeclass="menuNav"
+
+function handleOptionClick(el){
+	var className; 
+	if(el.textContent=="Menu"){
+		className =".MenuLists";
+		if(activeclass == "aboutNav"){
+			$(".aboutNav").removeClass("active");
+		}else if(activeclass == "reviewNav"){
+			$(".reviewNav").removeClass("active");
+		}
+		if(!$(".menuNav").hasClass("active")){
+		    $(".menuNav").addClass("active");
+		}
+		activeclass="menuNav";
+	}else if(el.textContent=="About"){
+		className =".aboutRestaurant";
+		if(activeclass == "menuNav"){
+			$(".menuNav").removeClass("active");
+		}else if(activeclass == "reviewNav"){
+			$(".reviewNav").removeClass("active");
+		}
+		if(!$(".aboutNav").hasClass("active")){
+		    $(".aboutNav").addClass("active");
+		}
+		activeclass="aboutNav";
+	}else if(el.textContent=="Reviews"){
+		className=".restaurantReview";
+		if(activeclass == "menuNav"){
+			$(".menuNav").removeClass("active");
+		}else if(activeclass == "aboutNav"){
+			$(".aboutNav").removeClass("active");
+		}
+		if(!$(".reviewNav").hasClass("active")){
+		    $(".reviewNav").addClass("active");
+		}
+		activeclass="reviewNav";
+	}
+	$('html,body').animate({
+        scrollTop: $(className).offset().top},
+        'slow');
+}
+function initialize() {
+  address = document.getElementById("restaurantAddress").textContent;
+  geocoder = new google.maps.Geocoder();
+  var latlng = new google.maps.LatLng(-34.397, 150.644);
+  var myOptions = {
+    zoom: 15,
+    center: latlng
+  };
+  map = new google.maps.Map(document.getElementById("restaurantLocation"), myOptions);
+  console.log("map here:",map);
+  if (geocoder) {
+  	console.log("it comes inside address:",address);
+    geocoder.geocode({
+      'address': address
+    }, function(results, status) {
+      if (status == 'OK') {
+      	console.log("status obtained");
+        if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+        	console.log("location here:",results[0].geometry.location);
+        	console.log("inside if check");
+        	console.log("get latitude",results[0].geometry.location.lat()
+        		);
+        	console.log("get latitude",results[0].geometry.location.lng());
+          map.setCenter(results[0].geometry.location);
+
+          latitude = results[0].geometry.location.lat();
+          longitude = results[0].geometry.location.lng();
+          latlanglocation = results[0].geometry.location;
+          var marker = new google.maps.Marker({
+            position: results[0].geometry.location,
+            map: map,
+            title: address
+          });
+        } else {
+          alert("No results found");
+        }
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    });
+  }
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+
+</script>

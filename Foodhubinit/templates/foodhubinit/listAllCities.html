@@ -32,10 +32,10 @@
   </div>
 </nav>
 <div class="container" id="stateContainer">
-<h2 class="text-center">Click on the states to view the cities</h2>
-	{% if states %}
-	{% for state in states %}
-		<a href="{% url 'cities' state_name=state %}" class="col-xs-4">{{state}}</a>
+<h2 class="text-center">Click on the cities to view the Restaurants</h2>
+	{% if cities %}
+	{% for city in cities %}
+		<a href="{% url 'city' city_name=city %}" class="col-xs-4">{{city}}</a>
 	{% endfor %}
 	{% endif %}
 </div>
