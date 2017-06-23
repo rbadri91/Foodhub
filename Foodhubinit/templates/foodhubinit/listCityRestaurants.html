@@ -33,7 +33,7 @@
   </div>
 </nav>
 <div class="locationContainer">
-  <div class="my-row special">
+  <div class="my-row specialRow">
     <div class="v-m">
     	<div id="locContainer" class="center-block"> 
                             <h2 class="text-center" style="font-family: Arial Black">Find out who delivers</h2>
@@ -75,7 +75,7 @@
 		</div>
 		<div class="rDescription">
 			<h4>
-			<a>{{restaurant.name}}</a>
+			<a style="font-family: Arial black;" href="{% url 'restaurant' restaurant_name=restaurant.name %}">{{restaurant.name}}</a>
 			</h4>
 			<div style= "text-overflow: ellipsis;overflow: hidden;width:150px;white-space: nowrap;">{{restaurant.foodTypes|join:","}}</div>
 			<div>
@@ -95,7 +95,11 @@
 			<span class="text-center">Miniumum</span>
 		</div>
 		<div class="col-sm-3">
+			{% if restaurant.deliveryPrice == 0.0 %}
+			<h5 class="text-center">Free</h5>
+			{% else %}
 			<h4 class="text-center">${{restaurant.deliveryPrice}}</h4>
+			{% endif %}
 			<span class="text-center">Delivery Fee</span>
 		</div>
 		<div class="col-sm-3">

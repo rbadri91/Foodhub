@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
+<link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
 </head>
 <nav class="navbar navbar-fixed-top navbar-inverse" style="background: transparent;border: none;top:3%">
   <div class="container-fluid">
@@ -32,7 +33,7 @@
 </nav>
 <body onload="initialize()">
 <div class="locationContainer">
-	<div class="my-row special">
+	<div class="my-row specialRow">
         <div class="v-m">
         	<div id="findLoc" class="center-block"> 
                             <h2 class="text-center" style="color: white; font-family: Arial Black">Order your food right from your place</h2>
@@ -74,22 +75,43 @@
 		</div>
 	</div>
 </div>
-<div class="container" id="locationDisplay">
-<h3 style="font-family:Arial Black">Browse from over 10000 of restaurants across all the cities in the US</h3>
+<!-- <div class="container" id="locationDisplay"> -->
+<div class="CitiesContainer">
+	<div class="col-xs-12 col-md-10 col-md-offset-1">
+<div class="innerContainer">
+<div class="menuheader-portion">
+<h3 class="menuHeading">Browse from over 10000 of restaurants across all the cities in the US</h3>
+</div>
 {% if capitals %}
+<div class="groupContainer">
+	<div class="s-row menuItemrow">
 {% for city in capitals|slice:":15" %}
 	<a href="{% url 'city' city_name=city %}" class="displayInfo col-xs-4">{{city}}</a>
- {% if forloop.counter|divisibleby:3%}
- 	<br>
- {% endif %}
+	{% if forloop.counter|divisibleby:3 %}
+	</div>
+	{% if forloop.counter != 15 %}
+		<div class="s-row menuItemrow">
+	{% endif %}
+	{% endif %}
 {% endfor %}
-<br>
+<div class="descriptionContainer">
 <a href="{% url 'listStates' %}" style="margin-top:10%">View all Cities </a>
+</div>
+</div>
 {% else %}
    There are no cities to display
 {% endif %}
 </div>
+</div>
+</div>
 </body>
+<footer class="s-row footerContainer">
+<div class = "innerfooterContainer">
+<ul>
+	<li><a>About Me</a></li>
+</ul>
+</div>
+</footer>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>

@@ -13,12 +13,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css" />
 <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
-</head>
 <link href="https://fonts.googleapis.com/css?family=Vollkorn:700" rel="stylesheet">
 <link rel="stylesheet" type="text/css"
     href="https://js.api.here.com/v3/3.0/mapsjs-ui.css" />
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"
-        async defer></script> 
+</head>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"></script> 
 <body style="background: #efefef;">
 <nav class="navbar navbar-fixed-top navbar-inverse" style="background: red">
   <div class="container-fluid">
@@ -46,6 +46,25 @@
     </div>
   </div>
 </nav>
+<div class="popup" data-popup="popup-1" style ="z-index: 10;">
+    <div class="popup-inner" style="top:50%;height:80%">
+      <div id = "listCustomizations" style="-webkit-overflow-scrolling:touch;overflow: scroll;height: 100%;overflow-x: hidden"></div>
+      <br>
+      <br>
+
+      	<div class="EditButtonGroup">
+      		<div class="s-row">
+      		<div class = "col-sm-4">
+      		<button data-popup-close="popup-1" class="btn btn-warning pull-left" href="#">Cancel</button>
+      		</div>
+      		<div class = "col-sm-7">
+	        <button  class="btn btn-primary pull-right" href="#">Add to Cart</button>
+	        </div>
+	        </div>
+        </div>
+        <a class="popup-close" data-popup-close="popup-1" href="#">x</a>
+    </div>
+</div>
 <div class="restaurantSummary">
 
 <div class="r-row">
@@ -106,18 +125,18 @@
 </div>
 <div class="MenuLists">
 	<div class="col-xs-12 col-md-10 col-md-offset-1">
-<div class="restaurantMenuContainer">
+<div class="innerContainer">
 	{% for menu in menus %}
 		<div class="menusection" id ="menuSection{{menu.apiKey}}">
 			<div id ="menuHeader{{menu.name}}" class="s-row menuheader-portion">
 				<h3 class="menuHeading">{{menu.name}}</h3>
 			</div>
-			<div class="menuGroupContainer">
+			<div class="groupContainer">
 			<div class="s-row menuItemrow">
 			{% for item in menu.items %}
 				<div class="menuitemSection">
-				<div class="menuitemsection-inner">
-					<div id="itemSection{{item.apiKey}}" class="menuite-inner-container s-row">
+				<div class="{{menu.name}} menuitemsection-inner">
+					<div data-popup-open="popup-1" id="itemSection{{item.apiKey}}" onclick="handleitemClick(this)" class="menuite-inner-container s-row">
 							<div class="col-sm-8 menuitemName">
 								<h6><span>{{item.name}}</span></h6>
 							</div>
@@ -152,7 +171,7 @@
 			Cuisines: {{restaurant.foodTypes|join:","}}
 			</div>
 			<div class="restaurantLocationContainer">
-				<h3 class="s-row restaurantLocationHeader">Location</h3>
+				<h3 class="s-row descriptionHeader">Location</h3>
 				<div id="restaurantLocation" class="restaurantLocationMap">
 				</div>
 				<div class="addressInfo">
@@ -163,10 +182,10 @@
 			</div>
 			<div class="restaurantHours">
 				<div class="hourInfoContainer">
-						<h3 class="s-row hourInfoHeader">Restaurant Hours</h3>
+						<h3 class="s-row descriptionHeader">Restaurant Hours</h3>
 					<ul class="hoursList">
-					{% for day,hours in restaurant.hours.items %}
-						<li class="dailyHoursRow">
+					{% for day,hours in restaurantHours.items %}
+						<li id ="{{day}}" class="dailyHoursRow">
 							<div class="day">{{day}}</div>
 							<div class="day-hours">{{hours.0}}</div>
 						</li>
@@ -216,7 +235,28 @@ var address;
 var latitude =0;
 var longitude =0;
 var latlanglocation =0;
-var activeclass="menuNav"
+var activeclass="menuNav";
+var menuObject = {{menus|safe}}
+$(function(){
+	google.maps.event.addDomListener(window, 'load', initialize);
+	var today = new Date();
+	var day = today.getDay();
+	if(day ==0){
+		document.getElementById("Sunday").style.fontWeight = 700;
+	}else if(day ==1){
+		document.getElementById("Monday").style.fontWeight = 700;
+	}else if(day ==2){
+		document.getElementById("Tuesday").style.fontWeight = 700;
+	}else if(day ==3){
+		document.getElementById("Wednesday").style.fontWeight = 700;
+	}else if(day ==4){
+		document.getElementById("Thursday").style.fontWeight = 700;
+	}else if(day ==5){
+		document.getElementById("Friday").style.fontWeight = 700;
+	}else if(day ==6){
+		document.getElementById("Saturday").style.fontWeight = 700;
+	}
+});
 
 function handleOptionClick(el){
 	var className; 
@@ -300,7 +340,187 @@ function initialize() {
     });
   }
 }
-google.maps.event.addDomListener(window, 'load', initialize);
 
 
+function handleitemClick(el){
+	var id = el.id;
+	var parentClass = $(el).parent().attr('class');
+	var sectionName = parentClass.substring(0,parentClass.indexOf("menuitemsection-inner"))
+	sectionName = sectionName.trim();
+	var itemName = id.substring("itemSection".length,id.length).trim();
+	console.log("itemName here:",itemName);
+	var selectedMenuGroup;
+	console.log("sectionName here:",sectionName);
+	for(var i=0;i<menuObject.length;i++){
+		console.log("menuObject[i].name here:",menuObject[i].name);
+		if(menuObject[i].name.trim() == sectionName){
+			selectedMenuGroup = menuObject[i];
+			break;
+		}
+	}
+	var customizationGroups =[];
+	var selectedItemName,selectedItemDescription;
+	for(var i=0;i<selectedMenuGroup.items.length;i++){
+		console.log("api key here:",selectedMenuGroup.items[i].apiKey);
+		
+		if(selectedMenuGroup.items[i].apiKey.trim() == itemName){
+			selectedItemName = selectedMenuGroup.items[i].name;
+			selectedItemDescription = selectedMenuGroup.items[i].description;
+			customizationGroups = selectedMenuGroup.items[i].customizationGroups;
+			break;
+		}
+	}
+	console.log("customizationGroups:",customizationGroups);
+	console.log("selectedItemDescription:",selectedItemDescription);
+	document.getElementById("listCustomizations").innerHTML ="";
+	if(customizationGroups){
+		constructCustomization(selectedItemName,selectedItemDescription,customizationGroups);
+	}else{
+		constructQuantityTable();
+	}
+}
+function constructCustomization(itemName,itemDescription,customizationGroups){
+	var customizationContainer = document.createElement("div");
+	customizationContainer.className = "customizationContainer";
+	document.getElementById("listCustomizations").appendChild(customizationContainer);
+	var colDiv = document.createElement("div");
+	colDiv.className = "col-sm-12";
+	customizationContainer.appendChild(colDiv);
+	var innerRow = document.createElement("div");
+	innerRow.className = "s-row";
+	colDiv.appendChild(innerRow);
+	var innerCustomizationContainer = document.createElement("div");
+	innerCustomizationContainer.className = "col-xs-12 col-md-12";
+	innerRow.appendChild(innerCustomizationContainer);
+	var customizationHeader = document.createElement("h3");
+	customizationHeader.className ="s-row descriptionshadow descriptionHeader ";
+	customizationHeader.textContent = itemName;
+	innerCustomizationContainer.appendChild(customizationHeader);
+	var descriptionContainer = document.createElement("div");
+	descriptionContainer.className ="descriptionContainer";
+	innerCustomizationContainer.appendChild(descriptionContainer);
+	var innerDescriptionContainer = document.createElement("div");
+	innerDescriptionContainer.className ="s-row";
+	innerDescriptionContainer.textContent = itemDescription;
+	descriptionContainer.appendChild(innerDescriptionContainer);
+
+	for(var j=0;j<customizationGroups.length;j++){
+
+		constructHeader(customizationGroups[j].name, innerCustomizationContainer);
+		if(customizationGroups[j].customizations[0].name ==""){
+			var choices = customizationGroups[j].customizations[0].customizationChoices;
+			console.log("it coes inside options");
+			constructDropdown(choices,innerCustomizationContainer);
+		}else{
+			var contents = customizationGroups[j].customizations;
+			constructCheckBox(contents, innerCustomizationContainer);
+		}
+	}
+	constructHeader("Quantity",innerCustomizationContainer);
+	var contents =[1,2,3,4,5,6,7,8,9,10];
+	constructDropdown(contents,innerCustomizationContainer);
+	constructHeader("Special Requests",innerCustomizationContainer);
+	constructTextArea(innerCustomizationContainer);
+
+}
+
+function constructHeader(headerName,parentContainer){
+	var customizationHeader = document.createElement("h4");
+	customizationHeader.className ="s-row descriptionHeader";
+	customizationHeader.textContent = headerName;
+	parentContainer.appendChild(customizationHeader);
+
+}
+
+function constructDropdown(contents,parentContainer){
+	var customizationDropdownContainer = document.createElement("div");
+	customizationDropdownContainer.className ="customizationDropdownContainer";
+	parentContainer.appendChild(customizationDropdownContainer);
+	var dropdownInnerContainer = document.createElement("div");
+	dropdownInnerContainer.className="s-row";
+	customizationDropdownContainer.appendChild(dropdownInnerContainer);
+	var dropdownWrapper = document.createElement("div");
+	dropdownWrapper.className = "dropdownWrapper";
+	dropdownInnerContainer.appendChild(dropdownWrapper);
+	var optionWrapper = document.createElement("select");
+	optionWrapper.className ="form-control input-xxlarge";
+	dropdownWrapper.appendChild(optionWrapper);
+	for(var j=0;j<contents.length;j++){
+		var optionsTag = document.createElement("option");
+		  if(contents[j].name){
+		  	optionsTag.textContent =contents[j].name; 
+          	optionsTag.value=contents[j].name;
+		  }else{
+		  	optionsTag.textContent =contents[j]; 
+          	optionsTag.value=contents[j];
+		  }
+          
+          optionWrapper.appendChild(optionsTag);
+	}
+
+}
+
+function constructCheckBox(contents,parentContainer){
+	var customizationCheckboxContainer = document.createElement("div");
+	customizationCheckboxContainer.className ="customizationDropdownContainer";
+	parentContainer.appendChild(customizationCheckboxContainer);
+	var checkboxInnerContainer = document.createElement("div");
+	checkboxInnerContainer.className="s-row";
+	customizationCheckboxContainer.appendChild(checkboxInnerContainer);
+	for(var j=0; j<contents.length;j++){
+		var checkBoxWrapper = document.createElement("div");
+		checkBoxWrapper.className = "checkBoxWrapper dropdownWrapper";
+		checkboxInnerContainer.appendChild(checkBoxWrapper);
+		var checkBoxinnerWrapper = document.createElement("div");
+		checkBoxinnerWrapper.className ="checkBoxinnerWrapper";
+		checkBoxWrapper.appendChild(checkBoxinnerWrapper);
+		var checkBoxSelect = document.createElement("input");
+		checkBoxSelect.type="checkbox";
+		checkBoxSelect.className ="checkboxclass"
+		checkBoxSelect.name = contents[j].name;
+		checkBoxinnerWrapper.appendChild(checkBoxSelect);
+		var checkBoxRegionWrapper = document.createElement("label");
+		checkBoxRegionWrapper.setAttribute("for",contents[j].name);
+		checkBoxRegionWrapper.className ="checkboxholder";
+		checkBoxinnerWrapper.appendChild(checkBoxRegionWrapper);
+		var checkBoxLableWrapper = document.createElement("label");
+		checkBoxLableWrapper.setAttribute("for",contents[j].name);
+		checkBoxLableWrapper.className ="checkboxDescirption";
+		checkBoxLableWrapper.textContent = contents[j].name + " - $"+ contents[j].customizationChoices[1].price ;
+		checkBoxinnerWrapper.appendChild(checkBoxLableWrapper);
+	}
+}
+
+function constructTextArea(parentContainer){
+	var customizationDropdownContainer = document.createElement("div");
+	customizationDropdownContainer.className ="customizationDropdownContainer";
+	parentContainer.appendChild(customizationDropdownContainer);
+	var textAreaInnerContainer = document.createElement("div");
+	textAreaInnerContainer.className="s-row";
+	customizationDropdownContainer.appendChild(textAreaInnerContainer);
+	var textAreaRegionWrapper = document.createElement("input");
+	textAreaRegionWrapper.type = "textarea";
+	textAreaRegionWrapper.className="textinnerWrapper form-control";
+	textAreaInnerContainer.appendChild(textAreaRegionWrapper)
+	var specialWarning = document.createElement("span");
+	specialWarning.textContent ="* Charges may apply";
+	textAreaInnerContainer.appendChild(specialWarning)
+
+}
+
+$('[data-popup-open]').on('click', function(e)  {
+		$('body').css('overflow','hidden');
+        var targeted_popup_class = jQuery(this).attr('data-popup-open');
+        $('[data-popup="' + targeted_popup_class + '"]').fadeIn(350);
+ 
+        e.preventDefault();
+});
+
+$('[data-popup-close]').on('click', function(e)  {
+		$('body').css('overflow','auto');
+        var targeted_popup_class = jQuery(this).attr('data-popup-close');
+        $('[data-popup="' + targeted_popup_class + '"]').fadeOut(350);
+ 
+        e.preventDefault();
+});
 </script>

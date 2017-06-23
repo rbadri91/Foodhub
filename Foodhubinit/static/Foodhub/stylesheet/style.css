@@ -9,13 +9,13 @@ body {
   height:100%;
   max-height: 100vh;
   background:url("../images/quiche.jpg") no-repeat;
-  background-size: 100%;
+  background-size: 100% 100%;
 }
 
 .my-row {
   height: 100%; }
 
-.special {
+.specialRow {
   height: 100vh;
   display: table;
   width: 100%; }
@@ -95,7 +95,7 @@ body {
   text-align: left;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
-.special {height:100vh; display:table;width:100%;}
+
 .new.text-center {
     height:100%;
     background: #569ec1;
@@ -330,7 +330,7 @@ color: black;
   background: #fff;
   padding: 8px;
   border: 1px solid #efefef;
-  cursor: pointer;
+ /* cursor: pointer;*/
 }
 .menuite-inner-container{
     display: -webkit-flex;
@@ -339,8 +339,9 @@ color: black;
     -webkit-flex-wrap: wrap;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
+    cursor: pointer;
 }
-.menuGroupContainer{
+.groupContainer{
   width: 100%;
   min-height: 50px;
   font-size: 14px;
@@ -384,11 +385,12 @@ h6{
   justify-content: flex-start;
 }
 
-.restaurantMenuContainer{
+.innerContainer{
   float: left;
   margin-bottom: 30px;
   width: 100%;
 }
+
 .aboutRestaurant{
   background: #FFF;
   width: 100%;
@@ -407,7 +409,8 @@ h6{
   flex-wrap: wrap;
   color: rgba(0,0,0,.5);
 }
-.restaurantLocationHeader{
+
+.descriptionHeader{
   margin-bottom:4px;
   font-family: 'Lato', sans-serif;
   font-weight: 700;
@@ -417,6 +420,11 @@ h6{
   display: flex;
   -webkit-box-align: center;
   align-items: center;
+}
+
+.descriptionshadow{
+  background: #6f5191 !important;
+  color: #f5f0f0 !important;
 }
 .restaurantLocationMap{
   /*flex:1 1;*/
@@ -428,17 +436,6 @@ h6{
 }
 .hourInfoContainer{
 
-}
-.hourInfoHeader{
-  margin-bottom:4px;
-  font-family: 'Lato', sans-serif;
-  font-weight: 700;
-  padding: 10px;
-  background: #efefef;
-  color: #777;
-  display: flex;
-  -webkit-box-align: center;
-  align-items: center;
 }
 .hoursList{
     display: flex;
@@ -492,4 +489,146 @@ h6{
 }
 .reviewHeadingContent{
   width: 100%;
+}
+
+.popup {
+    width:100%;
+    height:100%;
+    display:none;
+    position:fixed;
+    top:0px;
+    left:0px;
+    background:rgba(0,0,0,0.75);
+}
+ 
+/* Inner */
+.popup-inner {
+    max-width:700px;
+    width:90%;
+    padding:40px;
+    position:absolute;
+    top:50%;
+    left:50%;
+    -webkit-transform:translate(-50%, -50%);
+    transform:translate(-50%, -50%);
+    box-shadow:0px 2px 6px rgba(0,0,0,1);
+    border-radius:3px;
+    background:#fff;
+}
+ 
+/* Close Button */
+.popup-close {
+    width:30px;
+    height:30px;
+    padding-top:4px;
+    display:inline-block;
+    position:absolute;
+    bottom:50%;
+    right:0px;
+    transition:ease 0.25s all;
+    -webkit-transform:translate(50%, -50%);
+    transform:translate(50%, -50%);
+    border-radius:1000px;
+    background:rgba(0,0,0,0.8);
+    font-family:Arial, Sans-Serif;
+    font-size:20px;
+    text-align:center;
+    line-height:100%;
+    color:#fff;
+}
+ 
+.popup-close:hover {
+    -webkit-transform:translate(50%, -50%) rotate(180deg);
+    transform:translate(50%, -50%) rotate(180deg);
+    background:rgba(0,0,0,1);
+    text-decoration:none;
+}
+
+.customizationContainer{
+  background: #FFF;
+  width: 100%;
+}
+.descriptionContainer{
+  padding: 10px;
+  margin-bottom: 4px;
+  margin-top: 10px;
+}
+.customizationDropdownContainer{
+    padding: 10px;
+    margin-bottom: 4px;
+    margin-top: 10px;
+}
+.dropdownWrapper{
+  width:50%;
+}
+.checkBoxWrapper{
+  padding-top: 10px 0;
+}
+.checkBoxinnerWrapper{
+  margin-bottom: 0px;
+}
+.checkBoxinnerWrapper{
+    user-select: none;
+    position: relative;
+    height: 22px;
+}
+.checkboxclass{
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  float: left;
+  cursor: pointer;
+}
+.checkboxholder{
+  float: left;
+  width: 22px;
+
+}
+.checkboxDescirption{
+    padding-left: 10px;
+    position: relative;
+    float: left;
+    height: 100%;
+    cursor: pointer;
+    padding-left: 8px;
+    line-height: 22px;
+    margin-bottom: 0;
+}
+.EditButtonGroup{
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+  padding: 10px 40px 10px 20px;
+}
+.footerContainer{
+    z-index: 1000;
+    position: relative;
+    clear: both;
+    text-align: center;
+    margin-top: 24px;
+    height: 66px;
+    margin-top: 24px;
+    overflow: hidden;
+    line-height: 66px;
+    background: #1b152a;
+}
+.innerfooterContainer ul li{
+    height: 66px;
+    line-height: 66px;
+    padding-right: 20px;
+    display: inline-block;
+    color: white;
+    font-weight: 700;
+    font-weight: 2rem;
+    cursor: pointer;
+}
+.innerfooterContainer ul li a{
+  color: white;
+}
+.textinnerWrapper{
+    resize: vertical;
+    min-height: 72px;
+    padding: 16px;
 }

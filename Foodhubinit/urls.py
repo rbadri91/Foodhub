@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^listStates/$', views.listStates, name='listStates'),
     url(r'^cities/(?P<state_name>[0-9A-Za-z._\'\- ]+)$',views.cities, name='cities'),
     url(r'^city/(?P<city_name>[0-9A-Za-z._\'\- ]+)/$',views.city, name='city'),
-    url(r'^restaurant/(?P<restaurant_name>[0-9A-Za-z._\'\-&\+ ]+)/$',views.restaurant_description, name='restaurant'),
+    url(r'^restaurant/(?P<restaurant_name>[0-9A-Za-z._\'\-&\+\? ]+)/$',views.restaurant_description, name='restaurant'),
     url(r'^findrestaurants/(?P<address>[0-9A-Za-z._\'\-, ]+)/$',views.find_restaurants, name='findrestaurants'),
     url(r'^account_activation_sent/$', views.account_activation_sent, name='account_activation_sent'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',

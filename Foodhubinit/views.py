@@ -13,6 +13,7 @@ from bson.json_util import dumps
 import urllib.request,urllib.parse
 import requests
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import collections
 
 from Foodhubinit.forms import SignUpForm
 from Foodhubinit.tokens import account_activation_token
@@ -229,15 +230,21 @@ def restaurant_description(request, restaurant_name):
 				restaurantDesc = restaurant
 				break
 
-	print("restaurant here:",restaurantDesc)
 	menu= getRestaurantMenu(restaurantDesc['apiKey'])
-	print("menu here:",menu)
-	return render(request, 'Foodhubinit/restaurantPage.html',{"restaurant":restaurantDesc,"menus":menu})
+	restaurantHoursUnsorted = restaurantDesc['hours']
+	restaurantHours = dict();
+	weekdays =["Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday","Saturday"]
+	for day in weekdays:
+		restaurantHours[day] = restaurantHoursUnsorted[day];
+
+	print("menu:",menu)
+
+	return render(request, 'Foodhubinit/restaurantPage.html',{"restaurant":restaurantDesc,"menus":menu,"restaurantHours":restaurantHours})
 	pass
 
 def getRestaurantMenu(apiKey):
 	URL = "https://api.eatstreet.com/publicapi/v1/restaurant/"+apiKey+"/menu";
-	URL+= "?includeCustomizations=false";
+	URL+= "?includeCustomizations=true";
 	print("url here:",URL)
 	req = urllib.request.Request(URL)
 	req.add_header('X-Access-Token', '__API_EXPLORER_AUTH_KEY__')
