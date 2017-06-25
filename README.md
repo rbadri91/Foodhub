@@ -1,4 +1,6 @@
-Thsi is a web application built entirly using Python, Django web framework, and Postgres to help people locate a good restaurant nearby and order food to either get it deliverd or picjked up. I am using EatStreet API for getting information about the restaurant s which include the restaurant timings and menu details.
+#Foodhub
+
+This is a web application built entirly using Python, Django web framework, and Postgres to help people locate a good restaurant nearby and order food to either get it deliverd or picjked up. I am using EatStreet API for getting information about the restaurant s which include the restaurant timings and menu details.
 
 This project consists of 2 internal applications
 
