@@ -1,6 +1,7 @@
 Thsi is a web application built entirly using Python, Django web framework, and Postgres to help people locate a good restaurant nearby and order food to either get it deliverd or picjked up. I am using EatStreet API for getting information about the restaurant s which include the restaurant timings and menu details.
 
-This consists of 2 internal applications:
+This project consists of 2 internal applications
+
 Foodhubinit: An application that holds the user model and contains templates for landing pages and for listing restaurants
 
 shoppingCart: As the name suggests it contains everything related to shopping cart such as adding , reoving and updating products.
