@@ -14,6 +14,7 @@ import urllib.request,urllib.parse
 import requests
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import collections
+import operator
 
 from Foodhubinit.forms import SignUpForm
 from Foodhubinit.tokens import account_activation_token
@@ -118,12 +119,11 @@ def city(request,city_name):
 			if cityObj['city'] == city_name:
 				state = cityObj['state']
 				break
-		print("state here:",state);		
+
 		for cityObj2 in data1:
 			if cityObj2['state'] == state:
 					nearbyCities.append(cityObj2['city'])
 
-	print("nearbyCities:",nearbyCities)
 	nearbyCities= sorted(nearbyCities,key=str.lower);
 	pageNum = request.GET.get('pageNum')
 	if city_name in nearbyCities:
@@ -131,14 +131,11 @@ def city(request,city_name):
 	# if(not("city" in request.session) or (pageNum == 1 and request.session["city"] != city_name)):
 	
 	restaurants = getRestaurants("delivery",city_name)
-	print("restaurants:",restaurants)
 	request.session["restaurants"] = restaurants;
 	# else:
 		# restaurants = request.session["restaurants"]
 	request.session["city"] = city_name	
 	totalRestaurants = len(restaurants)
-	print("totalRestaurants:",totalRestaurants)
-	print("pageNum:",pageNum)
 	paginator = Paginator(restaurants, 20)
 	try:
 		displayRestaurants = paginator.page(pageNum)
@@ -147,13 +144,10 @@ def city(request,city_name):
 	except EmptyPage:
 		displayRestaurants = paginator.page(paginator.num_pages)
 	# displayRestaurants = restaurants[(pageNum-1)* 20 : ((pageNum-1)* 20 +20 )]
-	print("displayRestaurantshere:",displayRestaurants)
 	index = displayRestaurants.number - 1 
 	max_index = len(paginator.page_range)
 	start_index = index - 2 if index >= 2 else 0
 	end_index = index + 2 if index <= max_index - 2 else max_index
-	print("start_index:",start_index)
-	print("end_index:",end_index)
 	page_range = paginator.page_range[start_index:end_index]
 	return render(request, 'Foodhubinit/listCityRestaurants.html',{"city":city_name,"nearby_cities":nearbyCities,"restaurants":displayRestaurants,"total":totalRestaurants,"ratings":ratings,"page_range":page_range})	
 
@@ -167,7 +161,6 @@ def custom_login(request):
 def getRestaurants(type,place):
 	URL = "https://api.eatstreet.com/publicapi/v1/restaurant/search";
 	URL+= "?method="+type+"&street-address="+urllib.parse.quote(place);
-	print("url here:",URL)
 	req = urllib.request.Request(URL)
 	req.add_header('X-Access-Token', '__API_EXPLORER_AUTH_KEY__')
 	content = urllib.request.urlopen(req)
@@ -180,15 +173,32 @@ def find_restaurants(request,address):
 	pageNum = request.GET.get('pageNum')
 	orderType = "delivery"
 	ratings =dict();
+	sortBy = "default";
 	if request.GET.get('orderType'):
 		orderType = request.GET.get('orderType')
 
+	if request.GET.get('sortBy'):
+		sortBy = request.GET.get('sortBy')	
+
 	restaurants = getRestaurants(orderType,address)
+
+
+	print("sortBy here:",sortBy)
+	print("type sortBy here:",type(sortBy))
+	if sortBy!="default":
+		restaurants.sort(key = lambda x: x[sortBy])
+
 	request.session["restaurants"] = restaurants;
+	request.session["dest_address"] = address;
+	address_lat_long_resp = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+address)
+	resp_json_payload = address_lat_long_resp.json()
+	address_lat_long_resp = resp_json_payload['results'][0]['geometry']['location']
 	cuisines = getCuisines(restaurants);
-	print("cuisines here:",cuisines)
+	request.session["order_type"] = orderType;
 	displayRestaurants,page_range=getRestaurantDetails(restaurants,pageNum)
-	return render(request, 'Foodhubinit/listRestaurants.html',{"restaurants":displayRestaurants,"ratings":ratings,"page_range":page_range,"cuisines":cuisines,"address":json.dumps(address)})	
+	print("restaurants here:",restaurants)
+
+	return render(request, 'Foodhubinit/listRestaurants.html',{"restaurants":displayRestaurants,"ratings":ratings,"page_range":page_range,"cuisines":cuisines,"address":json.dumps(address),"orderTypeValue":json.dumps(orderType),"address_lat_long_resp":address_lat_long_resp,"sortBy":json.dumps(sortBy)})	
 
 def getRestaurantDetails(restaurants,pageNum):
 	paginator = Paginator(restaurants, 20)
@@ -203,8 +213,6 @@ def getRestaurantDetails(restaurants,pageNum):
 	max_index = len(paginator.page_range)
 	start_index = index - 2 if index >= 2 else 0
 	end_index = index + 2 if index <= max_index - 2 else max_index
-	print("start_index:",start_index)
-	print("end_index:",end_index)
 	page_range = paginator.page_range[start_index:end_index]
 	return displayRestaurants,page_range
 
@@ -220,6 +228,15 @@ def getCuisines(restaurants):
 					cuisines[foodType.lower()] =1
 
 	return cuisines
+
+
+def object_compare(x, y):
+   if x['deliveryMin'] > y['deliveryMin'] :
+      return 1
+   elif x['deliveryMin']  == y['deliveryMin'] :
+      return 0
+   else:  #x.resultType < y.resultType
+      return -1	
 
 def restaurant_description(request, restaurant_name):
 
@@ -237,9 +254,42 @@ def restaurant_description(request, restaurant_name):
 	for day in weekdays:
 		restaurantHours[day] = restaurantHoursUnsorted[day];
 
-	print("menu:",menu)
+	address="";
+	order_type ="delivery"
+	productsChosen =list();
+	sectionList = list();
+	itemNameList = list();
 
-	return render(request, 'Foodhubinit/restaurantPage.html',{"restaurant":restaurantDesc,"menus":menu,"restaurantHours":restaurantHours})
+	if request.session["dest_address"]:
+		address = request.session["dest_address"]
+
+	if request.session["order_type"]:
+		order_type = request.session["order_type"]
+	print("address here:",address)
+	if order_type == "delivery":
+		order_type ="Delivery"
+	else:
+		order_type ="Pick Up"
+
+	if "productsChosen" in request.session:
+		productsChosen = request.session["productsChosen"]
+
+	if "sectionNames" in request.session:
+		sectionList = request.session["sectionNames"]
+
+	if "itemNameList" in request.session:
+		itemNameList = request.session["itemNameList"]		
+
+	print("productsChosen here:",productsChosen)
+	print("sectionList here:",sectionList)
+	print("itemNameList here:",itemNameList)
+	productDetails =[]
+	if len(productsChosen) !=0:
+		productDetails = zip(productsChosen, sectionList, itemNameList)	
+
+	print("productDetails:",productDetails)
+	
+	return render(request, 'Foodhubinit/restaurantPage.html',{"restaurant":restaurantDesc,"menus":menu,"restaurantHours":restaurantHours,"dest_address":address,"order_type":order_type,"productsChosen":productDetails})
 	pass
 
 def getRestaurantMenu(apiKey):

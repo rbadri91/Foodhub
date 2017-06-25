@@ -1,0 +1,194 @@
+{% load static %}
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=0.8" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="{% static 'shoppingCart/stylesheet/style.css' %}" />
+</head>
+<body>
+<div id ="cartContainer" class = "cartContainer col-sm-3 pull-right s-row">
+<div class="s-row cartPanel panelContainer newPanel">
+	<div class="cart-contents">
+		<header class="cartHeader">
+		<div class="cartOrder-info">
+			<div class="shortCartHeader cart-borderbottom">
+				<div class="cart-title">
+					<h6>Your Order</h6>
+				</div>
+			</div>
+			<div class="s-row shortCartAddress cart-borderbottom">
+				<div class="cart-address">
+				<div class="s-row"><span>Order Type: {{order_type}}</span></div>
+				<div class ="s-row">From: {{restaurant.name}}</div>
+				<span>To: {{dest_address}}</span>
+				</div>
+				<div class="addressModificationLink">
+					<a>Change</a>
+				</div>
+			</div>
+
+		</div>
+		</header>
+		<div class="menucart-content">
+		<div id= "cartPanel" class="cartPanelBody">
+		{%if productsChosen%}
+			<div id = "menuOrderCart" class="productsContainer"> 
+				{% for product,sectionName, itemName in productsChosen %}
+					<div id ="{{product.name}}container" class="chosenProd cart-borderbottom">
+						<div class="prodQty text-center">
+							{{product.qty}}
+						</div>
+						<div class="chosenprodContainer">
+							<div class="prodName">
+								<span>{{product.name}}  <i class="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+							</div>
+							<ul class="prodDetails">
+								{% for desc in product.customizationList  %}
+									<li class= "desciptionList">
+										<span>{{desc.name}}</span>
+										{%if desc.price != 0%}
+										<span> - ${{desc.price}}</span>
+										{% endif %}
+									</li>
+								{% endfor %}
+							</ul>
+						</div>
+						<div class="product-price text-center">
+								${{product.price}}
+						</div>
+						<div class="prod-remove">
+							<a class="btn" style ="font-size:150%" id ="{{product.name}}delete_{{sectionName}}_{{itemName}}" onclick="handleRemoveProduct(this)">
+								<i class="fa fa-trash-o" aria-hidden="true"></i>
+							</a>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		{%else%}
+			<div id ="cartEmptyContainer" class="cartEmpty text-center">
+				<div class="cart-empty cart-borderbottom">
+				<h5 class="emptyCart-text">Your Cart is Empty</h5>
+				</div>
+				<div class="restaurantfees">
+					<div class="minDeliveryCost cart-borderbottom">
+						<span> Delivey Cost </span>
+						{% if restaurant.deliveryPrice == 0.0 %}
+							<span class="costValue">Free</span>
+						{% else %}
+							<span class="costValue">${{restaurant.deliveryPrice}}</span>
+						{% endif %}
+					</div>
+					<div class="minDeliveryCost cart-borderbottom">
+						<span> Minimum Order</span>
+						<span class="costValue">${{restaurant.deliveryMin}}</span>
+					</div>
+				</div>
+			</div>
+		{%endif%}
+		</div>
+		</div>
+	</div>
+</div>
+</div>
+</body>
+<script>
+function handleRemoveProduct(el){
+	var id = el.id;
+	var prodName= id.substring(0,id.indexOf("delete"));
+	var section_itemName = id.substring(id.indexOf("delete")+"delete".length+1);
+	console.log("prodName here:",prodName);
+	var sectionName =  section_itemName.substring(0,section_itemName.lastIndexOf("_"));
+	var itemName = section_itemName.substring(section_itemName.lastIndexOf("_")+1, section_itemName.length);
+
+	console.log("sectionName here:",sectionName);
+
+	console.log("itemName here:",itemName);
+
+	var prodContainer = document.getElementById(prodName+"container");
+	$.ajax({
+                 type:"POST",
+                 url:'{% url "shoppingCart:removeFromCart" %}',
+                 data: {
+                 		productName:prodName,
+                 		sectionName: sectionName,
+                 		itemName:itemName
+                        },
+                 success: function(result){
+                 	document.getElementById("menuOrderCart").removeChild(prodContainer);
+
+					if(document.getElementById("menuOrderCart").innerHTML.trim()==""){
+						document.getElementById("cartEmptyContainer").style.display ="block";
+						document.getElementById("cartPanel").removeChild(document.getElementById("menuOrderCart"));
+					}
+                 }
+    });
+}
+
+function constructProductContainer(productDetails,sectionName,itemName){
+
+	var prodMenuContainer = document.getElementById("menuOrderCart");
+	if(!prodMenuContainer){
+		prodMenuContainer =  document.createElement("div");
+		prodMenuContainer.className = "productsContainer";
+		prodMenuContainer.id = "menuOrderCart";
+		document.getElementById("cartPanel").appendChild(prodMenuContainer);
+	}
+	var productContainer = document.createElement("div");
+	productContainer.className = "chosenProd cart-borderbottom";
+	productContainer.id = productDetails.name +"container";
+	prodMenuContainer.appendChild(productContainer);
+	var prodQty = document.createElement("div");
+	prodQty.className = "prodQty text-center";
+	prodQty.textContent =productDetails.qty;
+	productContainer.appendChild(prodQty);
+	var productInnerContainer = document.createElement("div");
+	productInnerContainer.className = "chosenprodContainer";
+	productContainer.appendChild(productInnerContainer);
+	var prodName = document.createElement("div");
+	prodName.className ="prodName";
+	productInnerContainer.appendChild(prodName);
+	var nameSpan = document.createElement("span");
+	nameSpan.textContent =  productDetails.name;
+	prodName.appendChild(nameSpan);
+	prodName.style.cursor="pointer";
+	var itemEdit = document.createElement("i");
+	itemEdit.className ="fa fa-pencil-square-o";
+	itemEdit.setAttribute("aria-hidden","true");
+	prodName.appendChild(itemEdit);
+	var prodDescription = document.createElement("ul");
+	productInnerContainer.appendChild(prodDescription);
+	for(var i=0;i<productDetails.customizationList.length;i++){
+		var productCustomization = document.createElement("li");
+		productInnerContainer.appendChild(productCustomization);
+		var customizationName = document.createElement("span");
+		customizationName.textContent = productDetails.customizationList[i].name;
+		productCustomization.appendChild(customizationName);
+		if(productDetails.customizationList[i].price!=0){
+			var customizationPrice = document.createElement("span");
+			customizationPrice.textContent =" - $" + productDetails.customizationList[i].price;
+			productCustomization.appendChild(customizationPrice);
+		}
+	}
+	var prodPrice = document.createElement("div");
+	prodPrice.className ="product-price text-center";
+	prodPrice.textContent = "$"+productDetails.price;
+	productContainer.appendChild(prodPrice);
+	var prodRemove = document.createElement("div");
+	prodRemove.className ="prod-remove";
+	productContainer.appendChild(prodRemove);
+	var prodRemoveButton = document.createElement("a");
+	prodRemoveButton.id = productDetails.name+"delete_"+ sectionName +"_"+itemName;
+	$(prodRemoveButton).bind( "click", function() {
+		handleRemoveProduct(this);
+	});
+	prodRemove.appendChild(prodRemoveButton);
+	prodRemoveButton.style.fontSize ="150%";
+	var removeIcon = document.createElement("i");
+	removeIcon.className = "fa fa-trash-o";
+	removeIcon.setAttribute("aria-hidden","true");
+	prodRemoveButton.appendChild(removeIcon);
+}
+</script>

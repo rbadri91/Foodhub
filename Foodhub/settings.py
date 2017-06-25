@@ -39,6 +39,7 @@ signals.request_started.connect(close_connection)
 
 INSTALLED_APPS = [
     'Foodhubinit.apps.FoodhubinitConfig',
+    'shoppingCart.apps.ShoppingcartConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -12,6 +12,19 @@
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css" />
 </head>
+<script>
+function calcDistane(lat1, lon1,address_coord) {
+	console.log("lat1 here:",lat1);
+	console.log("calc1  here:",address_coord.lat - lat1);
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((address_coord.lat - lat1) * p)/2 + 
+          c(lat1 * p) * c(address_coord.lat * p) * 
+          (1 - c((address_coord.lng - lon1) * p))/2;
+    console.log("a val here:",a);
+  return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+}
+</script>
 <body style="background: #569ec1;" onload ="initialize()">
 <nav class="navbar navbar-fixed-top navbar-inverse" style="background: red">
   <div class="container-fluid">
@@ -36,6 +49,10 @@
         <li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
         <li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
         <li><a id="logout" href="{% url 'logout' %}" style="display:none">Logout</a></li>
+        <li style="padding-top: 10px;cursor: pointer;" class="pull-right">
+        <div style="font-size:300%;color:white;height:100%;padding:0 10px"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
+        </div>
+        </li>
       </ul>
       <ul class="nav navbar-nav navbar-right"></ul>
     </div>
@@ -45,14 +62,19 @@
 <div class= "row">
 <div class="col-sm-3" style="padding-right: 0">
 <div class="s-row FeedBackContainer">
-	<div>
-		<h3 class="text-center" style="margin-top: 0">Filter</h3>
+	<div class="s-row PanelHeader">
+		<h3 class="text-center menuHeading" style="margin-top: 0">Filter</h3>
 	</div>
 	<br>
-	<div id="OrderType" style="overflow: hidden;">
-		<h4 class="text-center">I want</h4>
-			<div class="checkbox">
-			    <input type="checkbox" id= "DeliveryType" data-group-cls="btn-group-justified" data-off-active-cls="btn-warning" data-on-active-cls="btn-primary" data-on-label="Takeout" data-off-label="Delivery" data-size="small">
+	<div id="OrderType" class="orderTypeClass" style="overflow: hidden;">
+		<h4 class="text-center order-title">I want</h4>
+			<div class="btn-group orderButtons" data-toggle="buttons">
+			    <label id ="delivery-button" class="btn btn-lg orderButton">
+			        <input type="radio" name="options" id="delivery" onchange="handleOrderTypeChange(this)"> Delivery
+			    </label>
+			    <label id ="takeout-button" class="btn btn-lg orderButton">
+			        <input type="radio" name="options" id="Takeout" onchange="handleOrderTypeChange(this)" > Takeout
+			    </label>
 		 	</div>	
 	</div>
 	<div class="Ratings">
@@ -75,12 +97,12 @@
 	</div>
 	<div>
 		<h4>Sort By</h4>
-		<select class="form-control" data-style="btn-primary" id="sortOrder">
-			<option value="0">Alphabetical</option>
-			<option value="1">Rating</option>
-			<option value="2">Distance</option>
-			<option value="3"> Delivery Minutes</option>
-			<option value="3"> Delivery Fee</option>
+		<select class="form-control" data-style="btn-primary" id="sortOrder" onchange="handleSorting(this)">
+			<option value="default">Alphabetical</option>
+			<option value="Rating">Rating</option>
+			<option value="Distance">Distance</option>
+			<option value="deliveryMin"> Delivery Minutes</option>
+			<option value="deliveryPrice"> Delivery Fee</option>
 		</select>
 	</div>
 	<br>
@@ -92,8 +114,10 @@
 	<div>
 		<h4>Cuisines</h4>
 		{% for key, value in cuisines.items %}
-			<div>
-				<label><input id={{forloop.counter}} type="checkbox"/>{{key}}-{{value}} </label>
+			<div class="checkBoxinnerWrapper">
+				<input id={{forloop.counter}} class="checkboxclass" type="checkbox" name ={{key}}/>
+				<label for ={{key}} class="checkboxholder"></label>
+				<label for ={{key}} class="checkboxDescirption" >{{key}}-{{value}} </label>
 			</div>
 		{% endfor %}
 	</div>
@@ -139,6 +163,7 @@
 		{% else %}
 			<div class="col-sm-3 rating">No Ratings</div>
 		{% endif %}
+		{% if restaurant.offersDelivery %}
 		<div class="col-sm-3 minDelivery">
 			<h4 class="text-center">${{restaurant.deliveryMin}}</h4>
 			<span class="text-center">Miniumum</span>
@@ -155,6 +180,11 @@
 			<h5 class="text-center">{{restaurant.minWaitTime}} - {{restaurant.maxWaitTime}}</h5>
 			<span class="text-center">Waiting time</span>
 		</div>
+		{% else %}
+		<div class="col-sm-9">
+			<h4 class="text-center" > The restaurant doesn't deliver food</h4>
+		</div>
+		{% endif %}
 	</div>
 	</div>
 </div>
@@ -163,7 +193,7 @@
 <div class="text-center">
   <ul class="pagination" >
     {% if restaurants.has_previous %}
-      <li><a href="?pageNum={{ restaurants.previous_page_number }}">&laquo;</a></li>
+      <li><a href="?pageNum={{ restaurants.previous_page_number }}&orderType={{orderTypeValue}}">&laquo;</a></li>
     {% else %}
       <li class="disabled"><span>&laquo;</span></li>
     {% endif %}
@@ -171,11 +201,11 @@
       {% if restaurants.number == i %}
         <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
       {% else %}
-        <li><a href="?pageNum={{ i }}">{{ i }}</a></li>
+        <li><a href="?pageNum={{ i }}&orderType={{orderTypeValue}}">{{ i }}</a></li>
       {% endif %}
     {% endfor %}
     {% if restaurants.has_next %}
-      <li><a href="?pageNum={{ restaurants.next_page_number }}">&raquo;</a></li>
+      <li><a href="?pageNum={{ restaurants.next_page_number }}&orderType={{orderTypeValue}}	">&raquo;</a></li>
     {% else %}
       <li class="disabled"><span>&raquo;</span></li>
     {% endif %}
@@ -193,7 +223,6 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-checkbox/1.4.0/bootstrap-checkbox.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
 <script>
 
@@ -205,14 +234,42 @@ function handleSearchLocation(){
 
 	}
 }
+
+function handleOrderTypeChange(el){
+	var id = el.id;
+	console.log("id here:",id);
+	var locationVal = document.getElementById("autocomplete").value;
+	console.log("locationVal here:",locationVal)
+	if(locationVal!=""){
+		 var url = "{% url 'findrestaurants' address=123 %}";
+		location.href=url.replace('123', locationVal)+"?orderType="+id;
+	}
+}
+
+
 $(function () {
-	$(':checkbox').checkboxpicker();
 
 	 $('.rating-select .btn').on('mouseover', function(){
         $(this).removeClass('btn-default').addClass('btn-warning');
         $(this).prevAll().removeClass('btn-default').addClass('btn-warning');
         $(this).nextAll().removeClass('btn-warning').addClass('btn-default');
     });
+
+	 var orderTypeVal ={{orderTypeValue|safe}}
+	 console.log("orderTypeVal:",orderTypeVal);
+	 var element;
+	 if(orderTypeVal == "delivery"){
+	 	 	element = document.getElementById("delivery-button");
+	 }else{
+	 		element = document.getElementById("takeout-button");
+			
+	 }
+	 element.className += " active" ;
+
+	 var sortBy ={{sortBy|safe}}
+	 if(sortBy!="default"){
+	 	document.getElementById("sortOrder").value = sortBy;
+	 }
 
     $('.rating-select').on('mouseleave', function(){
         active = $(this).parent().find('.selected');
@@ -262,6 +319,18 @@ function geolocate() {
           });
         }
 }
+
+function handleSorting(el){
+	var value = el.value;
+	console.log("value here:",value);
+	var locationVal = document.getElementById("autocomplete").value;
+	console.log("locationVal here:",locationVal)
+	if(locationVal!=""){
+		 var url = "{% url 'findrestaurants' address=123 %}";
+		location.href=url.replace('123', locationVal)+"?orderType="+{{orderTypeValue|safe}}+"&sortBy="+value;
+	}
+}
+
 var delTimeMap = [30,45,60,75];
 $("#ex13").bootstrapSlider({
     ticks: [30, 45, 60, 75],

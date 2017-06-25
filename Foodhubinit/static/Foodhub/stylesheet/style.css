@@ -141,6 +141,12 @@ body {
 .imageShow{
   display: inline-block;
 }
+.restaurantOptions{
+    overflow: hidden;
+    padding: 0px;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
 .rDescription{
   display: inline-block;
   margin-left: 2%;
@@ -631,4 +637,44 @@ h6{
     resize: vertical;
     min-height: 72px;
     padding: 16px;
+}
+.pac-container{
+  z-index: 100000;
+}
+.orderTypeClass{
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+.PanelHeader{
+  display: flex;
+  -webkit-box-align: center;
+  margin-top: 2%;
+  margin-bottom: 0;
+  padding: 8px 4px 8px 15px;
+  align-items: center;
+}
+.order-title{
+    display: flex;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-align: start;
+    -webkit-align-items: flex-start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    padding-bottom: 5px;
+}
+.orderButton{
+   background: #bbe4ed;
+}
+.orderButton.active{
+  background: rgb(109, 127, 5);
 }

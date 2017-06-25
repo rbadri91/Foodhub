@@ -2,7 +2,6 @@
 <head>
 <title>Restauarants</title>
 <meta name="viewport" content="width=device-width, initial-scale=0.8" />
-<link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -16,6 +15,7 @@
 <link href="https://fonts.googleapis.com/css?family=Vollkorn:700" rel="stylesheet">
 <link rel="stylesheet" type="text/css"
     href="https://js.api.here.com/v3/3.0/mapsjs-ui.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
 </head>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"></script> 
@@ -33,6 +33,12 @@
       <a class="navbar-brand mainlogo" style="color: white;font-size: 300%">Foodhub</a>
     </div>
     <div id="navbar" class="collapse navbar-collapse">
+    <div class="col-sm-3 col-md-3"></div>
+    	<div class="col-sm-4 wrapper" style="padding-top: 1%;">
+	        <!-- <form class="navbar-form" role="search"> -->
+	            <input type="text" id ="autocomplete" class="form-control" placeholder="&#xf002;  Where do you live?" style="font-family:Arial, FontAwesome" name="q">
+	        <!-- </form> -->
+	    </div>
       <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
         <li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
         <li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
@@ -58,13 +64,15 @@
       		<button data-popup-close="popup-1" class="btn btn-warning pull-left" href="#">Cancel</button>
       		</div>
       		<div class = "col-sm-7">
-	        <button  class="btn btn-primary pull-right" href="#">Add to Cart</button>
+	        <button  class="btn btn-primary pull-right" href="#" onclick="handleAddToCart()">Add to Cart</button>
 	        </div>
 	        </div>
         </div>
         <a class="popup-close" data-popup-close="popup-1" href="#">x</a>
     </div>
 </div>
+{% include "shoppingCart/cartView.html" %}
+<div class="restaurantOptions col-sm-9">
 <div class="restaurantSummary">
 
 <div class="r-row">
@@ -86,7 +94,7 @@
 </div>
 <span class="attribution" style="color: white; font-family:Arial Black">Courtesy- freefoodphotos.com</span> 
 </div>
-<div class="row restsmallDesc">
+<div class="s-row restsmallDesc">
 <div class="col-sm-12">
 	<div>
 		<div class="col-sm-3" style="border-right: 1px solid grey">
@@ -116,7 +124,7 @@
 	</div>
 </div>
 </div>
-<div class="row optionsNav">
+<div class="s-row optionsNav">
 <div class="menuNavSection">
 <span class="menuNav active" onclick="handleOptionClick(this)">Menu</span>
 <span class="aboutNav" onclick="handleOptionClick(this)">About</span>
@@ -209,6 +217,7 @@
 	</div>
 </div>
 </div>
+</div>
 </body>
 <script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
 <script type="text/javascript" charset="UTF-8"
@@ -227,6 +236,12 @@
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+
+{% csrf_token %}
+<script type="text/javascript">
+// using jQuery
+var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+</script>
    
 <script>
 var geocoder;
@@ -237,6 +252,11 @@ var longitude =0;
 var latlanglocation =0;
 var activeclass="menuNav";
 var menuObject = {{menus|safe}}
+var selectedMenuGroup;
+var customizationGroups =[];
+var selectedItemName,selectedItemDescription,selectedItemPrice;
+var dropdownCount =0;
+var sectionName,itemName;
 $(function(){
 	google.maps.event.addDomListener(window, 'load', initialize);
 	var today = new Date();
@@ -299,6 +319,13 @@ function handleOptionClick(el){
         'slow');
 }
 function initialize() {
+	autocomplete = new google.maps.places.Autocomplete(
+        (document.getElementById('autocomplete')),
+                  { types: ['geocode'] });
+              google.maps.event.addListener(autocomplete, 'place_changed', function() {
+              		handleSearchLocation();
+         });
+
   address = document.getElementById("restaurantAddress").textContent;
   geocoder = new google.maps.Geocoder();
   var latlng = new google.maps.LatLng(-34.397, 150.644);
@@ -345,12 +372,13 @@ function initialize() {
 function handleitemClick(el){
 	var id = el.id;
 	var parentClass = $(el).parent().attr('class');
-	var sectionName = parentClass.substring(0,parentClass.indexOf("menuitemsection-inner"))
+	sectionName = parentClass.substring(0,parentClass.indexOf("menuitemsection-inner"))
 	sectionName = sectionName.trim();
-	var itemName = id.substring("itemSection".length,id.length).trim();
-	console.log("itemName here:",itemName);
-	var selectedMenuGroup;
+	itemName = id.substring("itemSection".length,id.length).trim();
+
 	console.log("sectionName here:",sectionName);
+	console.log("itemName here:",itemName);
+
 	for(var i=0;i<menuObject.length;i++){
 		console.log("menuObject[i].name here:",menuObject[i].name);
 		if(menuObject[i].name.trim() == sectionName){
@@ -358,13 +386,13 @@ function handleitemClick(el){
 			break;
 		}
 	}
-	var customizationGroups =[];
-	var selectedItemName,selectedItemDescription;
+	console.log("selectedMenuGroup here:",selectedMenuGroup);
 	for(var i=0;i<selectedMenuGroup.items.length;i++){
 		console.log("api key here:",selectedMenuGroup.items[i].apiKey);
 		
 		if(selectedMenuGroup.items[i].apiKey.trim() == itemName){
 			selectedItemName = selectedMenuGroup.items[i].name;
+			selectedItemPrice = selectedMenuGroup.items[i].basePrice;
 			selectedItemDescription = selectedMenuGroup.items[i].description;
 			customizationGroups = selectedMenuGroup.items[i].customizationGroups;
 			break;
@@ -373,12 +401,26 @@ function handleitemClick(el){
 	console.log("customizationGroups:",customizationGroups);
 	console.log("selectedItemDescription:",selectedItemDescription);
 	document.getElementById("listCustomizations").innerHTML ="";
-	if(customizationGroups){
-		constructCustomization(selectedItemName,selectedItemDescription,customizationGroups);
-	}else{
-		constructQuantityTable();
-	}
+	constructCustomization(selectedItemName,selectedItemDescription,customizationGroups);
 }
+
+function geolocate() {
+		console.log("in geolocate");
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var circle = new google.maps.Circle({
+              center: geolocation,
+              radius: position.coords.accuracy
+            });
+            autocomplete.setBounds(circle.getBounds());
+          });
+        }
+}
+
 function constructCustomization(itemName,itemDescription,customizationGroups){
 	var customizationContainer = document.createElement("div");
 	customizationContainer.className = "customizationContainer";
@@ -403,13 +445,13 @@ function constructCustomization(itemName,itemDescription,customizationGroups){
 	innerDescriptionContainer.className ="s-row";
 	innerDescriptionContainer.textContent = itemDescription;
 	descriptionContainer.appendChild(innerDescriptionContainer);
-
+	dropdownCount =0;
 	for(var j=0;j<customizationGroups.length;j++){
 
 		constructHeader(customizationGroups[j].name, innerCustomizationContainer);
 		if(customizationGroups[j].customizations[0].name ==""){
 			var choices = customizationGroups[j].customizations[0].customizationChoices;
-			console.log("it coes inside options");
+			dropdownCount ++;
 			constructDropdown(choices,innerCustomizationContainer);
 		}else{
 			var contents = customizationGroups[j].customizations;
@@ -418,7 +460,7 @@ function constructCustomization(itemName,itemDescription,customizationGroups){
 	}
 	constructHeader("Quantity",innerCustomizationContainer);
 	var contents =[1,2,3,4,5,6,7,8,9,10];
-	constructDropdown(contents,innerCustomizationContainer);
+	constructDropdown(contents,innerCustomizationContainer,"quantity");
 	constructHeader("Special Requests",innerCustomizationContainer);
 	constructTextArea(innerCustomizationContainer);
 
@@ -432,7 +474,7 @@ function constructHeader(headerName,parentContainer){
 
 }
 
-function constructDropdown(contents,parentContainer){
+function constructDropdown(contents,parentContainer,dropdownid){
 	var customizationDropdownContainer = document.createElement("div");
 	customizationDropdownContainer.className ="customizationDropdownContainer";
 	parentContainer.appendChild(customizationDropdownContainer);
@@ -444,6 +486,12 @@ function constructDropdown(contents,parentContainer){
 	dropdownInnerContainer.appendChild(dropdownWrapper);
 	var optionWrapper = document.createElement("select");
 	optionWrapper.className ="form-control input-xxlarge";
+	console.log("dropdownid:",dropdownid);
+	if(dropdownid){
+		optionWrapper.id = dropdownid;
+	}else{
+		optionWrapper.id = dropdownCount;
+	}
 	dropdownWrapper.appendChild(optionWrapper);
 	for(var j=0;j<contents.length;j++){
 		var optionsTag = document.createElement("option");
@@ -467,28 +515,46 @@ function constructCheckBox(contents,parentContainer){
 	var checkboxInnerContainer = document.createElement("div");
 	checkboxInnerContainer.className="s-row";
 	customizationCheckboxContainer.appendChild(checkboxInnerContainer);
+	console.log("contents here:",contents);
+	console.log("name here:",contents[0].name);
+		if(contents[0].name){
+			createCheckBoxWrapper(contents,checkboxInnerContainer);
+		}else{
+			createCheckBoxWrapper(contents[0].customizationChoices,checkboxInnerContainer);
+		}
+	
+}
+
+function createCheckBoxWrapper(contents,checkboxInnerContainer){
 	for(var j=0; j<contents.length;j++){
-		var checkBoxWrapper = document.createElement("div");
-		checkBoxWrapper.className = "checkBoxWrapper dropdownWrapper";
-		checkboxInnerContainer.appendChild(checkBoxWrapper);
-		var checkBoxinnerWrapper = document.createElement("div");
-		checkBoxinnerWrapper.className ="checkBoxinnerWrapper";
-		checkBoxWrapper.appendChild(checkBoxinnerWrapper);
-		var checkBoxSelect = document.createElement("input");
-		checkBoxSelect.type="checkbox";
-		checkBoxSelect.className ="checkboxclass"
-		checkBoxSelect.name = contents[j].name;
-		checkBoxinnerWrapper.appendChild(checkBoxSelect);
-		var checkBoxRegionWrapper = document.createElement("label");
-		checkBoxRegionWrapper.setAttribute("for",contents[j].name);
-		checkBoxRegionWrapper.className ="checkboxholder";
-		checkBoxinnerWrapper.appendChild(checkBoxRegionWrapper);
-		var checkBoxLableWrapper = document.createElement("label");
-		checkBoxLableWrapper.setAttribute("for",contents[j].name);
-		checkBoxLableWrapper.className ="checkboxDescirption";
-		checkBoxLableWrapper.textContent = contents[j].name + " - $"+ contents[j].customizationChoices[1].price ;
-		checkBoxinnerWrapper.appendChild(checkBoxLableWrapper);
-	}
+		if(contents[j].customizationChoices || contents[j].price!=0){
+			var checkBoxWrapper = document.createElement("div");
+				checkBoxWrapper.className = "checkBoxWrapper dropdownWrapper";
+				checkboxInnerContainer.appendChild(checkBoxWrapper);
+				var checkBoxinnerWrapper = document.createElement("div");
+				checkBoxinnerWrapper.className ="checkBoxinnerWrapper";
+				checkBoxWrapper.appendChild(checkBoxinnerWrapper);
+				var checkBoxSelect = document.createElement("input");
+				checkBoxSelect.type="checkbox";
+				checkBoxSelect.className ="checkboxclass"
+				checkBoxSelect.name = contents[j].name;
+				checkBoxinnerWrapper.appendChild(checkBoxSelect);
+				var checkBoxRegionWrapper = document.createElement("label");
+				checkBoxRegionWrapper.setAttribute("for",contents[j].name);
+				checkBoxRegionWrapper.className ="checkboxholder";
+				checkBoxinnerWrapper.appendChild(checkBoxRegionWrapper);
+				var checkBoxLableWrapper = document.createElement("label");
+				checkBoxLableWrapper.setAttribute("for",contents[j].name);
+				checkBoxLableWrapper.className ="checkboxDescirption";
+				if(contents[j].customizationChoices){
+					checkBoxLableWrapper.textContent = contents[j].name + " - $"+ contents[j].customizationChoices[1].price ;
+				}else{
+					checkBoxLableWrapper.textContent = contents[j].name + " - $"+ contents[j].price ;
+				}
+				
+				checkBoxinnerWrapper.appendChild(checkBoxLableWrapper);
+		}	
+	}	
 }
 
 function constructTextArea(parentContainer){
@@ -507,12 +573,100 @@ function constructTextArea(parentContainer){
 	textAreaInnerContainer.appendChild(specialWarning)
 
 }
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+function handleSearchLocation(){
+	var addressVal = autocomplete.getPlace().formatted_address;
+	console.log("addressVal here:",addressVal);
+	if(addressVal!=""){
+		 var url = "{% url 'findrestaurants' address=123 %}";
+		location.href=url.replace('123', addressVal);
+	}
+}
+
+function handleAddToCart(){
+	var productDetails ={};
+	productDetails.name = selectedItemName;
+	productDetails.price = selectedItemPrice;
+	var quantity = parseInt(document.getElementById("quantity").value);
+	productDetails.qty = quantity;
+	productDetails.customizationList =[];
+	var dropdowncountVal =1;
+	for(var j=0;j<customizationGroups.length;j++){
+		var customization ={}
+		if(customizationGroups[j].customizations[0].name ==""){
+			customization.name = document.getElementById(dropdowncountVal).value;
+			customization.price =0; 
+			productDetails.customizationList.push(customization);
+			dropdowncountVal ++;
+		}else{
+			var contents = customizationGroups[j].customizations;
+			var subCustomization =[];
+			if(contents[0].name){
+			subCustomization = createCustomizationObjects(contents); 
+			}else{
+			subCustomization = createCustomizationObjects(contents[0].customizationChoices);
+			}
+			console.log("subCustomization:",subCustomization)
+			for(var k=0;k<subCustomization.length;k++){
+				productDetails.customizationList.push(subCustomization[k]);
+			}
+		}
+	}
+	console.log("productDetails here:",productDetails)
+	document.getElementById("cartEmptyContainer").style.display ="none";
+	$.ajax({
+                 type:"POST",
+                 url:'{% url "shoppingCart:addToCart" %}',
+                 data: {
+                 		"productDetails":JSON.stringify(productDetails),
+                 		"sectionName": sectionName,
+                 		"itemName":itemName
+                        },
+                 success: function(result){
+                     $('[data-popup-close]').click();
+						constructProductContainer(productDetails,sectionName,itemName);
+                    }
+    });
+	
+}
+
+function createCustomizationObjects(contents){
+	var custmizationSubArray =[]
+	for(var j=0; j<contents.length;j++){
+		if(contents[j].customizationChoices || contents[j].price!=0){
+			var customization ={};
+			var chkbox = $('input[name="'+contents[j].name+'"]:checkbox');
+			console.log("chkbox  here:",chkbox);
+			console.log("checked vaue here :",chkbox.is(":checked"));
+			if(chkbox.is(":checked")){
+				customization.name = contents[j].name;
+				if(contents[j].customizationChoices){
+					customization.price = contents[j].customizationChoices[1].price;
+				}else{
+					customization.price = contents[j].price;
+				}
+				custmizationSubArray.push(customization);
+			}
+		}
+	}
+	return custmizationSubArray;
+}
 
 $('[data-popup-open]').on('click', function(e)  {
 		$('body').css('overflow','hidden');
         var targeted_popup_class = jQuery(this).attr('data-popup-open');
         $('[data-popup="' + targeted_popup_class + '"]').fadeIn(350);
- 
         e.preventDefault();
 });
 
