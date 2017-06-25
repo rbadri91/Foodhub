@@ -8,5 +8,5 @@ shoppingCart: As the name suggests it contains everything related to shopping ca
 
 Django Template is used for the front end and Bootstrap is used to beautify the web pages. 
 
-To run the app you have to create a database in postgres / MYSQL or d3sql .I have used Postgres to address scalability issues.
+To run the app you have to create a database in postgres / MYSQL or d3sql .I have used Postgres to address scalability issues,either Python 2.7 or 3.6 and the latestversion od Django 1.11.
 
