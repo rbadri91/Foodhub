@@ -23,7 +23,6 @@ matplotlib==2.0.0
 mccabe==0.5.3
 more-itertools==2.4.1
 ndg-httpsclient==0.4.2
-numpy==1.12.0rc2+mkl
 olefile==0.43
 pandas==0.19.2
 pep8==1.7.0
