@@ -557,7 +557,9 @@ def restaurant_description(request, restaurant_name):
 	sectionList = list();
 	itemNameList = list();
 
-	if request.session["dest_address"]:
+	if "order_address" in request.session:
+		address = request.session["order_address"]
+	elif "dest_address" in request.session:
 		address = request.session["dest_address"]
 
 	if request.session["order_type"]:

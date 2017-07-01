@@ -213,6 +213,7 @@
     border-width: 2px;
     border-style: solid;
     transition: background .2s ease,border-color .2s ease;
+    cursor: pointer;
 }
 .f-btn-full{
 	display: block;
@@ -222,7 +223,6 @@
 .editCartWrapper{
 	width: 100%;
     background-color: #FFF;
-    overflow-y: scroll;
     position: absolute;
     top: 0;
     left: 0;
@@ -276,4 +276,12 @@
 }
 .changeLabel{
 	cursor: pointer;
+}
+.orderButtonGroup > .f-btn.f-btn-active{
+	border-color: #319b3d;
+    color: #fff;
+    background-color: #319b3d;
+}
+.fs-btn{
+	width: 100%
 }

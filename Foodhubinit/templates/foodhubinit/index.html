@@ -19,7 +19,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand mainlogo" style="color: white;font-size: 300%" href="/Foodhubinit">Foodhub</a>
+      <a class="navbar-brand mainlogo" style="color: white;font-size: 300%" href="/">Foodhub</a>
     </div>
     <div id="navbar" class="collapse navbar-collapse">
       <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
@@ -119,7 +119,7 @@
 </div>
 </footer>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min."></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -144,13 +144,18 @@ $.ajaxSetup({
 
 </script>
 <script>
-var autocomplete;
+var autocomplete,autocomplete3;
 function initialize() {
         autocomplete = new google.maps.places.Autocomplete(
         (document.getElementById('autocomplete')),
                   { types: ['geocode'] });
               google.maps.event.addListener(autocomplete, 'place_changed', function() {
-              });  
+              });
+        autocomplete3 = new google.maps.places.Autocomplete(
+        (document.getElementById('autocomplete3')),
+                  { types: ['geocode'] });
+              google.maps.event.addListener(autocomplete3, 'place_changed', function() {
+              });        
 }
 function geolocate() {
         if (navigator.geolocation) {
@@ -164,6 +169,7 @@ function geolocate() {
               radius: position.coords.accuracy
             });
             autocomplete.setBounds(circle.getBounds());
+            autocomplete3.setBounds(circle.getBounds());
           });
         }
 }

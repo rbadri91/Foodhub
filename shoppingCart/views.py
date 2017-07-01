@@ -153,5 +153,9 @@ def removeFromCart(request):
 	
 	return HttpResponse(json.dumps(restaurantInfo), content_type="application/json")
 
-
-
+def updateOrderAdddress(request):
+	order_type = request.POST["orderType"];
+	address =  request.POST["newAddress"];
+	request.session["order_type"] = order_type
+	request.session["order_address"] = address
+	return HttpResponse("Success")

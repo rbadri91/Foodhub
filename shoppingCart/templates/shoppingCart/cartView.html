@@ -8,7 +8,9 @@
 <link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
 <link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{% static 'shoppingCart/stylesheet/style.css' %}" />
+
 </head>
+<script src="{% static 'shoppingCart/js/handleCartView.js' %}"></script>
 <body>
 <div class="popup" data-popup2="popup-2" style ="z-index: 860">
     <div class="popup-inner">
@@ -17,28 +19,32 @@
       		<div class="cartSection">
       			<div class="col-xs-12 setMargin">
       				<div class="orderHeader">
-      				<h3 class="menuHeading">Your Setting</h3>
+      				<h3 class="menuHeading">Your Settings</h3>
       				 </div>
       				 <div class="OrderTypeSection">
       				 	<div class="orderButtonGroup f-btn-group">
-      				 		<a id="deliveryType" class="f-btn">Delivery</a>
-      				 		<a id="deliveryType" class="f-btn">Pickup</a>
+      				 		<a id="delivery" class="f-btn f-btn-active" onclick ="handleOrderType(this)">Delivery</a>
+      				 		<a id="PickUp" class="f-btn" onclick ="handleOrderType(this)">Pickup</a>
       				 	</div>
       				 </div>
       			</div>
       			<div class="col-xs-12 setMargin">
-      				<h5>Your Delivery Address</h5>
+      				<h5 class="restaurantInfoHeader">Your Delivery Address</h5>
       				<div class="f-input-group">
       					<input type="text" id ="autocomplete3" class="form-control" placeholder="&#xf002;  Where do you live?" style="font-family:Arial, FontAwesome" name="q">
       				</div>
+      			</div>
+      			<div class="col-xs-12 setMargin">
+      				<div class="col-sm-5 col-md-offset-1">
+      				<button  onclick = "handleSaveAddres()" class=" btn fs-btn btn-primary btn-lg center-block" href="#">Save</button></div>
+      				<div class="col-sm-5">
+        			<button data-popup2-close="popup-2" class=" btn btn-primary fs-btn btn-lg center-block" href="#">Cancel</button></div>
       			</div>
       		</div>
       	</div>
       </div>
       <br>
       <br>
-        <button  onclick = "handleSaveAddres()" class=" btn btn-primary" href="#">Save</button>
-        <button data-popup2-close="popup-2" class=" btn btn-primary" href="#">Cancel</button>
         <a class="popup-close" data-popup2-close="popup-2" href="#">x</a>
     </div>
 </div>
@@ -55,9 +61,9 @@
 			</div>
 			<div class="s-row shortCartAddress cart-borderbottom">
 				<div class="cart-address">
-				<div class="s-row"><span>Order Type: {{order_type}}</span></div>
+				<div class="s-row"><span>Order Type: <span id ="orderTypeVal">{{order_type}}</span></span></div>
 				<div class ="s-row">From: {{restaurantName}}</div>
-				<span>To: {{dest_address}}</span>
+				<span>To: <span id ="destAddressVal">{{dest_address}}</span></span>
 				</div>
 				<div class="addressModificationLink">
 					<a class="changeLabel" data-popup2-open="popup-2">Change</a>
@@ -184,24 +190,40 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript">
+	var activeOrderType ="{{order_type|safe}}";
+</script>
 <script>
 $(function(){
+	if(activeOrderType =="Delivery"){
+		console.log("it comes inside");
+		$("#PickUp").removeClass("f-btn-active");
+		$("#delivery").addClass("f-btn-active");
+	}else{
+		$("#PickUp").addClass("f-btn-active");
+		$("#delivery").removeClass("f-btn-active");
+	}
 	$('[data-popup2-open]').on('click', function(e)  {
+		$('body').css('overflow','hidden');
         var targeted_popup_class = jQuery(this).attr('data-popup2-open');
         $('[data-popup2="' + targeted_popup_class + '"]').fadeIn(350);
  
         e.preventDefault();
     });
     $('[data-popup2-close]').on('click', function(e)  {
+    	$('body').css('overflow','auto');
         var targeted_popup_class = jQuery(this).attr('data-popup2-close');
         $('[data-popup2="' + targeted_popup_class + '"]').fadeOut(350);
  
         e.preventDefault();
     });
-})
+});
+
 var restaurantName = "";
 var delMin ="";
 var delPrice ="";
+
+
 function handleRemoveProduct(el){
 	var id = el.id;
 	var prodName= id.substring(0,id.indexOf("delete"));
@@ -253,173 +275,21 @@ function handleRemoveProduct(el){
     });
 }
 
-function constructProductContainer(productDetails,sectionName,itemName){
-
-	var prodMenuContainer = document.getElementById("menuOrderCart");
-	if(!prodMenuContainer){
-		prodMenuContainer =  document.createElement("div");
-		prodMenuContainer.className = "productsContainer";
-		prodMenuContainer.id = "menuOrderCart";
-		document.getElementById("cartPanel").appendChild(prodMenuContainer);
-	}
-	var productContainer = document.createElement("div");
-	productContainer.className = "chosenProd cart-borderbottom";
-	productContainer.id = productDetails.name +"container";
-	prodMenuContainer.appendChild(productContainer);
-	var prodQty = document.createElement("div");
-	prodQty.className = "prodQty text-center";
-	prodQty.textContent =productDetails.qty;
-	productContainer.appendChild(prodQty);
-	var productInnerContainer = document.createElement("div");
-	productInnerContainer.className = "chosenprodContainer";
-	productContainer.appendChild(productInnerContainer);
-	var prodName = document.createElement("div");
-	prodName.className ="prodName";
-	productInnerContainer.appendChild(prodName);
-	var nameSpan = document.createElement("span");
-	nameSpan.textContent =  productDetails.name;
-	prodName.appendChild(nameSpan);
-	prodName.style.cursor="pointer";
-	var itemEdit = document.createElement("i");
-	itemEdit.className ="fa fa-pencil-square-o";
-	itemEdit.setAttribute("aria-hidden","true");
-	prodName.appendChild(itemEdit);
-	var prodDescription = document.createElement("ul");
-	productInnerContainer.appendChild(prodDescription);
-	for(var i=0;i<productDetails.customizationList.length;i++){
-		var productCustomization = document.createElement("li");
-		productInnerContainer.appendChild(productCustomization);
-		var customizationName = document.createElement("span");
-		customizationName.textContent = productDetails.customizationList[i].name;
-		productCustomization.appendChild(customizationName);
-		if(productDetails.customizationList[i].price!=0){
-			var customizationPrice = document.createElement("span");
-			customizationPrice.textContent =" - $" + productDetails.customizationList[i].price;
-			productCustomization.appendChild(customizationPrice);
-		}
-	}
-	var prodPrice = document.createElement("div");
-	prodPrice.className ="product-price text-center";
-	prodPrice.textContent = "$"+productDetails.price;
-	productContainer.appendChild(prodPrice);
-	var prodRemove = document.createElement("div");
-	prodRemove.className ="prod-remove";
-	productContainer.appendChild(prodRemove);
-	var prodRemoveButton = document.createElement("a");
-	prodRemoveButton.id = productDetails.name+"delete_"+ sectionName +"_"+itemName;
-	$(prodRemoveButton).bind( "click", function() {
-		handleRemoveProduct(this);
-	});
-	prodRemove.appendChild(prodRemoveButton);
-	prodRemoveButton.style.fontSize ="150%";
-	var removeIcon = document.createElement("i");
-	removeIcon.className = "fa fa-trash-o";
-	removeIcon.setAttribute("aria-hidden","true");
-	prodRemoveButton.appendChild(removeIcon);
-}
-
-function constructEmptyCartContainer(isMenuPage,delPrice,delMin){
-	var cartContainer = document.createElement("div");
-	cartContainer.id = "cartEmptyContainer";
-	cartContainer.className = "cartEmpty text-center";
-	document.getElementById("cartPanel").appendChild(cartContainer);
-	var emptyCartHeder =document.createElement("div");
-	emptyCartHeder.id="cart-empty cart-borderbottom";
-	cartContainer.appendChild(emptyCartHeder); 
-	var emptyCartHeaderText = document.createElement("h5");
-	emptyCartHeaderText.className = "emptyCart-text";
-	emptyCartHeaderText.textContent = "Your Cart is Empty";
-	cartContainer.appendChild(emptyCartHeaderText);
-	if(isMenuPage){
-		var restaurantFeeInfo = document.createElement("div");
-		restaurantFeeInfo.className = "restaurantfees";
-		cartContainer.appendChild(restaurantFeeInfo);
-		var restaurantDeliveryCostContainer = document.createElement("div");
-		restaurantDeliveryCostContainer.className = "minDeliveryCost cart-borderbottom";
-		restaurantFeeInfo.appendChild(restaurantDeliveryCostContainer);
-		var deliveryCostHeader = document.createElement("span");
-		deliveryCostHeader.textContent = "Delivey Cost";
-		restaurantDeliveryCostContainer.appendChild(deliveryCostHeader);
-		var deliveryCostValue = document.createElement("span");
-		deliveryCostValue.className ="costValue";
-
-		if(delPrice ==0.0){
-			deliveryCostValue.textContent ="Free";
-		}else{
-			deliveryCostValue.textContent = delPrice;
-		}
-		restaurantDeliveryCostContainer.appendChild(deliveryCostValue);
-
-		var restaurantDeliveryMinContainer = document.createElement("div");
-		restaurantDeliveryMinContainer.className = "minDeliveryCost cart-borderbottom";
-		restaurantFeeInfo.appendChild(restaurantDeliveryMinContainer);
-		var deliveryCostHeader = document.createElement("span");
-		deliveryCostHeader.textContent = "Minimum Order";
-		restaurantDeliveryMinContainer.appendChild(deliveryCostHeader);
-		var deliveryMinValue = document.createElement("span");
-		deliveryMinValue.className ="costValue";
-		deliveryMinValue.textContent ="$"+delMin;
-		restaurantDeliveryMinContainer.appendChild(deliveryMinValue);
-	}
-
-}
-
-function createSubTotalWrapper(subTotal,deliveryFee,taxAmt,total){
-	var subTotalWrapper = document.createElement('div');
-	subTotalWrapper.id ="subTotalWrapper";
-	subTotalWrapper.className ="subTotalContainer";
-	document.getElementById("cartPanel").appendChild(subTotalWrapper);
-	constructSubTotalRow(subTotalWrapper,"","Items Subtotal:",subTotal);
-	constructSubTotalRow(subTotalWrapper,"","Delivery Fee:",deliveryFee);
-	constructSubTotalRow(subTotalWrapper,"","Sales Tax:",taxAmt);
-	constructSubTotalRow(subTotalWrapper,"","Total:",total);
-}
-
-function constructSubTotalRow(subTotalWrapper,divId,labelName,value){
-	var itemDescription = document.createElement("div");
-		itemDescription.className ="s-row chosenItem subtotalDescription";
-		subTotalWrapper.appendChild(itemDescription);
-	var itemLabel = document.createElement("div");
-		itemLabel.className ="chosenItemLabel";
-		itemDescription.appendChild(itemLabel);
-	var lableSpan = document.createElement("span");	
-		lableSpan.textContent = labelName;
-		itemLabel.appendChild(lableSpan);
-	var itemValueWrapper = 	document.createElement("div");
-		itemValueWrapper.id =divId;
-		itemValueWrapper.className ="chosenItemValue text-right";
-		itemValueWrapper.textContent = value;
-	itemDescription.appendChild(itemValueWrapper);
-
-}
-
-function createCartFooter(totalValue){
-	var cartFooter = document.createElement("div");
-		cartFooter.className ="cartFooter";
-		cartFooter.id ="cartFooterContainer";
-	document.getElementById("cartPanelContainer").appendChild(cartFooter);
-	var proceedButtonContainer = document.createElement("div");
-	proceedButtonContainer.className = "proceedButtonContainer";
-	cartFooter.appendChild(proceedButtonContainer);
-	var proceedButtonWrapper = document.createElement("div");
-	proceedButtonWrapper.className = "proceedButtonWrapper";
-	proceedButtonContainer.appendChild(proceedButtonWrapper);
-	var proceedButton = document.createElement("button");
-	proceedButton.className = "btn proceedButton f-btn f-btn-full btn-info";
-	proceedButtonWrapper.appendChild(proceedButton);
-	var proceedButtonLabel = document.createElement("span");
-	proceedButtonLabel.textContent ="Proceed To Checkout";
-	proceedButton.appendChild(proceedButtonLabel);
-	var proceedButtonValue = document.createElement("span");
-	proceedButtonValue.id = "totalValue";
-	proceedButtonValue.textContent ="$ "+ totalValue;
-	proceedButton.appendChild(proceedButtonValue);
-}
 function handleSaveAddres(){
+	var address= document.getElementById("autocomplete3").value;
+	$.ajax({
+		type:"POST",
+        url:'{% url "shoppingCart:updateOrderAdddress" %}',
+        data: {
+                 		orderType:activeOrderType,
+                 		newAddress:address
+              },
+        success: function(result){
+        	document.getElementById("orderTypeVal").textContent = activeOrderType;
+        	document.getElementById("destAddressVal").textContent = address;
+        	$('[data-popup2-close]').click();
+        }      
+	});
+}
 
-}
-function handleCartClick(){
-	console.log("in handleCartClick");
-	$( "#cartContainer" ).toggle("slide",{ direction: "right" });
-}
 </script>
