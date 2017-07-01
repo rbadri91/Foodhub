@@ -45,6 +45,7 @@
 <div id ="cartContainer" class = "cartContainer col-sm-3 pull-right s-row {% if isMenuPage %}keepopen{% endif %}">
 <div class="s-row cartPanel panelContainer newPanel">
 	<div id ="cartPanelContainer"  class="cart-contents">
+		{% if isMenuPage or productsChosen %}
 		<header class="cartHeader">
 		<div class="cartOrder-info">
 			<div class="shortCartHeader cart-borderbottom">
@@ -65,6 +66,7 @@
 
 		</div>
 		</header>
+		{%endif%}
 		<div class="menucart-content">
 		<div id= "cartPanel" class="cartPanelBody">
 		{%if productsChosen%}
@@ -142,6 +144,7 @@
 				<div class="cart-empty cart-borderbottom">
 				<h5 class="emptyCart-text">Your Cart is Empty</h5>
 				</div>
+				{% if isMenuPage %}
 				<div class="restaurantfees">
 					<div class="minDeliveryCost cart-borderbottom">
 						<span> Delivey Cost </span>
@@ -156,6 +159,7 @@
 						<span class="costValue">${{restaurant.deliveryMin}}</span>
 					</div>
 				</div>
+				{%endif%}
 			</div>
 		{%endif%}
 		</div>
