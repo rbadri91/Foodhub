@@ -6,9 +6,12 @@
 	padding:50px 0 0;
 	box-shadow: 0 0 10px 0 rgba(0,0,0,.5);
 	background: white;
+	z-index: 830;
+	display: none;
 }
-.cartContainer .open{
+.keepopen{
 	z-index: 50;
+	display: block !important;
 }
 .cartPanel{
 	position: relative;
@@ -158,4 +161,132 @@
 	-webkit-box-flex: 1;
 	flex: 1;
     padding: 20px 10px;
+}
+.chosenItem{
+	padding: 5px 20px;
+    width: 100%;
+}
+.chosenItem.subtotalDescription{
+	    margin-top: 10px;
+}
+.chosenItem.totalAmt{
+	    margin-top: 10px;
+}
+
+
+.chosenItemLabel{
+	-webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+.chosenItemValue{
+	display: block;
+}
+.cartFooter{
+	z-index: 10;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 100%;
+}
+.proceedButtonWrapper{
+	padding: 15px;
+    border-top: 1px solid #efefef;
+}
+.proceedButton{
+	margin-top: 20px;
+    margin-bottom: 20px;
+    color: #fff;
+    background: #44771d;
+    border-color: #44771d;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+}
+.f-btn{
+	border-radius: 4px;
+    padding: 12px 16px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    border-width: 2px;
+    border-style: solid;
+    transition: background .2s ease,border-color .2s ease;
+}
+.f-btn-full{
+	display: block;
+    width: 100%;
+}
+
+.popup {
+    width:100%;
+    height:100%;
+    display:none;
+    position:fixed;
+    top:0px;
+    left:0px;
+    background:rgba(0,0,0,0.75);
+}
+ 
+.editCartWrapper{
+	width: 100%;
+    background-color: #FFF;
+    overflow-y: scroll;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    height: 100%;
+    right: 0;
+    padding: 24px;
+}
+.setMargin{
+	    margin-bottom: 16px;
+}
+.orderHeader{
+
+}
+.f-btn-group{
+  display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+.orderButtonGroup > .f-btn{
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    white-space: normal;
+    transition-property: z-index,background,border-color,color;
+    transition-timing-function: ease;
+    transition-duration: .1s;
+    border-color: rgba(0,0,0,.2);
+    color: #2b8282;
+    background-color: transparent;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+}
+.f-input-group{
+	position: relative;
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+.listAdressEditOptions{
+	width: 100%;
+    background-color: #FFF;
+    overflow-y: scroll;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    height: 100%;
+    right: 0;
+}
+.changeLabel{
+	cursor: pointer;
 }

@@ -30,7 +30,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand mainlogo" style="color: white;font-size: 300%">Foodhub</a>
+      <a class="navbar-brand mainlogo" style="color: white;font-size: 300%" href="/Foodhubinit">Foodhub</a>
     </div>
     <div id="navbar" class="collapse navbar-collapse">
     <div class="col-sm-3 col-md-3"></div>
@@ -257,7 +257,10 @@ var customizationGroups =[];
 var selectedItemName,selectedItemDescription,selectedItemPrice;
 var dropdownCount =0;
 var sectionName,itemName;
-$(function(){
+var restaurantName,deliveryMin,deliveryPrice;
+</script>
+<script type="text/javascript"> 
+  $(function(){
 	google.maps.event.addDomListener(window, 'load', initialize);
 	var today = new Date();
 	var day = today.getDay();
@@ -276,8 +279,14 @@ $(function(){
 	}else if(day ==6){
 		document.getElementById("Saturday").style.fontWeight = 700;
 	}
+	restaurantName = "{{restaurant.name|safe}}";
+	deliveryMin = "{{restaurant.deliveryMin|safe}}";
+	deliveryPrice = "{{restaurant.deliveryPrice|safe}}";
+	console.log("restaurantName here:",restaurantName);
 });
+</script>
 
+<script>
 function handleOptionClick(el){
 	var className; 
 	if(el.textContent=="Menu"){
@@ -624,18 +633,33 @@ function handleAddToCart(){
 		}
 	}
 	console.log("productDetails here:",productDetails)
-	document.getElementById("cartEmptyContainer").style.display ="none";
+	if(document.getElementById("cartEmptyContainer")){
+		document.getElementById("cartEmptyContainer").style.display ="none";
+	}
+	
 	$.ajax({
                  type:"POST",
                  url:'{% url "shoppingCart:addToCart" %}',
                  data: {
                  		"productDetails":JSON.stringify(productDetails),
                  		"sectionName": sectionName,
-                 		"itemName":itemName
+                 		"itemName":itemName,
+                 		"restaurantName":restaurantName,
+                 		"deliveryMin":deliveryMin,
+                 		"deliveryPrice":deliveryPrice
                         },
                  success: function(result){
+                 	console.log("result here:",result)
                      $('[data-popup-close]').click();
 						constructProductContainer(productDetails,sectionName,itemName);
+						if(document.getElementById("subTotalWrapper")){
+							document.getElementById('ProductSubTotal').textContent = result.subTotal;
+							document.getElementById('ProductTotal').textContent = result.totalAmt;
+							document.getElementById('totalValue').textContent = result.totalAmt;
+						}else{
+							createSubTotalWrapper(result.subTotal,result.deliveryFee,result.taxAmt, result.totalAmt);
+							createCartFooter(result.totalAmt);
+						}
                     }
     });
 	

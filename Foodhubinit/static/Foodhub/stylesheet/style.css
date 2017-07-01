@@ -590,7 +590,6 @@ h6{
 .checkboxholder{
   float: left;
   width: 22px;
-
 }
 .checkboxDescirption{
     padding-left: 10px;
@@ -601,6 +600,10 @@ h6{
     padding-left: 8px;
     line-height: 22px;
     margin-bottom: 0;
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .EditButtonGroup{
   bottom: 0;
@@ -609,7 +612,7 @@ h6{
   padding: 10px 40px 10px 20px;
 }
 .footerContainer{
-    z-index: 1000;
+    z-index: 700;
     position: relative;
     clear: both;
     text-align: center;

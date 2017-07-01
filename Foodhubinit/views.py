@@ -19,6 +19,7 @@ import operator
 from Foodhubinit.forms import SignUpForm
 from Foodhubinit.tokens import account_activation_token
 import json
+from decimal import *
 
 
 # Create your views here.
@@ -29,10 +30,81 @@ def index(request):
 	capitals =list()
 	request.session['cities'] = {}
 	request.session.modified = True
+
+	productsChosen = list();
+	sectionList = list();
+	itemNamesList = list();
+
+	orderType = "delivery"
+
+	if "order_type" in request.session:
+		order_type = request.session["order_type"]
+	if order_type == "delivery":
+		order_type ="Delivery"
+	else:
+		order_type ="Pick Up"
+
+	address =""
+	productDetails=[]
+	if "order_address" in request.session:
+		address = request.session["order_address"]
+
+	restaurantName =""
+	if "restaurantName" in request.session:
+		restaurantName = request.session["restaurantName"]	
+
+	if "productsChosen" in request.session:
+		productsChosen = request.session["productsChosen"]
+
+	if "sectionNames" in request.session:
+		sectionList = request.session["sectionNames"]
+
+	if "itemNameList" in request.session:
+		itemNamesList = request.session["itemNameList"]
+
+	totalPrice =0
+
+	if "subTotal" in request.session:
+		totalPrice = request.session["subTotal"] 
+
+	totalAmount =0
+
+	if 'totalAmt' in request.session:
+		totalAmount = request.session["totalAmt"]
+
+	deliveryMin =0.0
+	if 'deliveryMin' in request.session:
+		deliveryMin = request.session["deliveryMin"]
+
+	deliveryPrice =0.0
+	if 'deliveryPrice' in request.session:
+		deliveryPrice = request.session["deliveryPrice"]	
+
+	salesTax =0.0
+	if 'salestax' in request.session:
+		salesTax = request.session["salestax"]	
+
+	productDetails =[]
+	if len(productsChosen) !=0:
+		productDetails = zip(productsChosen, sectionList, itemNamesList)	
+
+				
+	request.session["isMenuPage"] =False
 	
 	for attribute, value in data1.items():
 		capitals.append(value['capital'])
-	return render(request, 'Foodhubinit/index.html',{"capitals":capitals})
+	return render(request, 'Foodhubinit/index.html',
+		{"capitals":capitals,
+		"order_type":order_type,
+		"dest_address":address,
+		"restaurantName":restaurantName,
+		"productsChosen":productDetails,
+		"subTotal":totalPrice,
+		"totalAmt":totalAmount,
+		"deliveryMin":deliveryMin,
+		"deliveryPrice":deliveryPrice,
+		"salesTax":salesTax
+		})
 
 @login_required
 def home(request):
@@ -86,14 +158,142 @@ def listStates(request):
 	json_data = open('Foodhubinit/static/Foodhub/json/states_hash.json')
 	data1 = json.load(json_data)
 	states =list()
+
+	productsChosen = list();
+	sectionList = list();
+	itemNamesList = list();
+
+	orderType = "delivery"
+
+	if "order_type" in request.session:
+		order_type = request.session["order_type"]
+	if order_type == "delivery":
+		order_type ="Delivery"
+	else:
+		order_type ="Pick Up"
+
+	address =""
+	productDetails=[]
+	if "order_address" in request.session:
+		address = request.session["order_address"]
+
+	restaurantName =""
+	if "restaurantName" in request.session:
+		restaurantName = request.session["restaurantName"]	
+
+	if "productsChosen" in request.session:
+		productsChosen = request.session["productsChosen"]
+
+	if "sectionNames" in request.session:
+		sectionList = request.session["sectionNames"]
+
+	if "itemNameList" in request.session:
+		itemNamesList = request.session["itemNameList"]
+
+	totalPrice =0
+
+	if "subTotal" in request.session:
+		totalPrice = request.session["subTotal"] 
+
+	totalAmount =0
+
+	if 'totalAmt' in request.session:
+		totalAmount = request.session["totalAmt"]
+
+	deliveryMin =0.0
+	if 'deliveryMin' in request.session:
+		deliveryMin = request.session["deliveryMin"]
+
+	deliveryPrice =0.0
+	if 'deliveryPrice' in request.session:
+		deliveryPrice = request.session["deliveryPrice"]	
+
+	salesTax =0.0
+	if 'salestax' in request.session:
+		salesTax = request.session["salestax"]	
+
+	productDetails =[]
+	if len(productsChosen) !=0:
+		productDetails = zip(productsChosen, sectionList, itemNamesList)	
+
+
 	for value in data1.values():
 		states.append(value)
-	return render(request, 'Foodhubinit/listAllStates.html',{"states":states})
+	return render(request, 'Foodhubinit/listAllStates.html',
+		{"states":states,
+		"order_type":order_type,
+		"dest_address":address,
+		"restaurantName":restaurantName,
+		"productsChosen":productDetails,
+		"subTotal":totalPrice,
+		"totalAmt":totalAmount,
+		"deliveryMin":deliveryMin,
+		"deliveryPrice":deliveryPrice,
+		"salesTax":salesTax})
 
 def cities(request,state_name):
 	json_data = open('Foodhubinit/static/Foodhub/json/cities.json')
 	data = json.load(json_data)
 	cities = list();
+
+	productsChosen = list();
+	sectionList = list();
+	itemNamesList = list();
+
+	orderType = "delivery"
+
+	if "order_type" in request.session:
+		order_type = request.session["order_type"]
+	if order_type == "delivery":
+		order_type ="Delivery"
+	else:
+		order_type ="Pick Up"
+
+	address =""
+	productDetails=[]
+	if "order_address" in request.session:
+		address = request.session["order_address"]
+
+	restaurantName =""
+	if "restaurantName" in request.session:
+		restaurantName = request.session["restaurantName"]	
+
+	if "productsChosen" in request.session:
+		productsChosen = request.session["productsChosen"]
+
+	if "sectionNames" in request.session:
+		sectionList = request.session["sectionNames"]
+
+	if "itemNameList" in request.session:
+		itemNamesList = request.session["itemNameList"]
+
+	totalPrice =0
+
+	if "subTotal" in request.session:
+		totalPrice = request.session["subTotal"] 
+
+	totalAmount =0
+
+	if 'totalAmt' in request.session:
+		totalAmount = request.session["totalAmt"]
+
+	deliveryMin =0.0
+	if 'deliveryMin' in request.session:
+		deliveryMin = request.session["deliveryMin"]
+
+	deliveryPrice =0.0
+	if 'deliveryPrice' in request.session:
+		deliveryPrice = request.session["deliveryPrice"]	
+
+	salesTax =0.0
+	if 'salestax' in request.session:
+		salesTax = request.session["salestax"]	
+
+	productDetails =[]
+	if len(productsChosen) !=0:
+		productDetails = zip(productsChosen, sectionList, itemNamesList)	
+
+
 	for cityObj in data:
 		if cityObj['state'] == state_name:
 			cities.append(cityObj['city'])
@@ -103,7 +303,17 @@ def cities(request,state_name):
 	# data1 = json.load(json_data)
 	# cities = data1.get(state_name)
 	request.session["cities"] = cities
-	return render(request, 'Foodhubinit/listAllCities.html',{"cities":cities})
+	return render(request, 'Foodhubinit/listAllCities.html',
+		{"cities":cities,
+		"order_type":order_type,
+		"dest_address":address,
+		"restaurantName":restaurantName,
+		"productsChosen":productDetails,
+		"subTotal":totalPrice,
+		"totalAmt":totalAmount,
+		"deliveryMin":deliveryMin,
+		"deliveryPrice":deliveryPrice,
+		"salesTax":salesTax})
 
 def city(request,city_name):
 	json_data = open('Foodhubinit/static/Foodhub/json/cities.json')
@@ -149,7 +359,83 @@ def city(request,city_name):
 	start_index = index - 2 if index >= 2 else 0
 	end_index = index + 2 if index <= max_index - 2 else max_index
 	page_range = paginator.page_range[start_index:end_index]
-	return render(request, 'Foodhubinit/listCityRestaurants.html',{"city":city_name,"nearby_cities":nearbyCities,"restaurants":displayRestaurants,"total":totalRestaurants,"ratings":ratings,"page_range":page_range})	
+	request.session["isMenuPage"] =False
+
+	productsChosen = list();
+	sectionList = list();
+	itemNamesList = list();
+
+	orderType = "delivery"
+
+	if "order_type" in request.session:
+		order_type = request.session["order_type"]
+	if order_type == "delivery":
+		order_type ="Delivery"
+	else:
+		order_type ="Pick Up"
+
+	address =""
+	productDetails=[]
+	if "order_address" in request.session:
+		address = request.session["order_address"]
+
+	restaurantName =""
+	if "restaurantName" in request.session:
+		restaurantName = request.session["restaurantName"]	
+
+	if "productsChosen" in request.session:
+		productsChosen = request.session["productsChosen"]
+
+	if "sectionNames" in request.session:
+		sectionList = request.session["sectionNames"]
+
+	if "itemNameList" in request.session:
+		itemNamesList = request.session["itemNameList"]
+
+	totalPrice =0
+
+	if "subTotal" in request.session:
+		totalPrice = request.session["subTotal"] 
+
+	totalAmount =0
+
+	if 'totalAmt' in request.session:
+		totalAmount = request.session["totalAmt"]
+
+	deliveryMin =0.0
+	if 'deliveryMin' in request.session:
+		deliveryMin = request.session["deliveryMin"]
+
+	deliveryPrice =0.0
+	if 'deliveryPrice' in request.session:
+		deliveryPrice = request.session["deliveryPrice"]	
+
+	salesTax =0.0
+	if 'salestax' in request.session:
+		salesTax = request.session["salestax"]	
+
+	productDetails =[]
+	if len(productsChosen) !=0:
+		productDetails = zip(productsChosen, sectionList, itemNamesList)	
+
+
+
+	return render(request, 'Foodhubinit/listCityRestaurants.html',
+		{"city":city_name,
+		"nearby_cities":nearbyCities,
+		"restaurants":displayRestaurants,
+		"total":totalRestaurants,
+		"ratings":ratings,
+		"page_range":page_range,
+		"order_type":order_type,
+		"dest_address":address,
+		"restaurantName":restaurantName,
+		"productsChosen":productDetails,
+		"subTotal":totalPrice,
+		"totalAmt":totalAmount,
+		"deliveryMin":deliveryMin,
+		"deliveryPrice":deliveryPrice,
+		"salesTax":salesTax})	
 
 def custom_login(request):
     if request.user.is_authenticated():
@@ -197,8 +483,19 @@ def find_restaurants(request,address):
 	request.session["order_type"] = orderType;
 	displayRestaurants,page_range=getRestaurantDetails(restaurants,pageNum)
 	print("restaurants here:",restaurants)
+	request.session["isMenuPage"] =False
 
-	return render(request, 'Foodhubinit/listRestaurants.html',{"restaurants":displayRestaurants,"ratings":ratings,"page_range":page_range,"cuisines":cuisines,"address":json.dumps(address),"orderTypeValue":json.dumps(orderType),"address_lat_long_resp":address_lat_long_resp,"sortBy":json.dumps(sortBy)})	
+
+
+	return render(request, 'Foodhubinit/listRestaurants.html',
+		{"restaurants":displayRestaurants,
+		"ratings":ratings,
+		"page_range":page_range,
+		"cuisines":cuisines,
+		"address":json.dumps(address),
+		"orderTypeValue":json.dumps(orderType),
+		"address_lat_long_resp":address_lat_long_resp,
+		"sortBy":json.dumps(sortBy)})	
 
 def getRestaurantDetails(restaurants,pageNum):
 	paginator = Paginator(restaurants, 20)
@@ -283,14 +580,48 @@ def restaurant_description(request, restaurant_name):
 	print("productsChosen here:",productsChosen)
 	print("sectionList here:",sectionList)
 	print("itemNameList here:",itemNameList)
+
+	totalPrice =0.000
+
+	for product in productsChosen:
+		totalPrice = totalPrice + (product['price']* product['qty'])
+		if 'customizationList' in product:
+			for customList in product['customizationList']:
+				totalPrice += customList['price']
+
+	print('subTotal:',totalPrice)
+	totalValue =0.000
+	totalPrice = round(totalPrice,3)
+	request.session["subTotal"] = totalPrice
+	request.session["salestax"] = restaurantDesc['taxRate']
+	print("tax in cents:",((totalPrice*100)+ (restaurantDesc['taxRate'] * 100)))
+	totalValue = round(((totalPrice*100) + (restaurantDesc['taxRate'] * 100))/100,3)
+	print("totalValue here:",totalValue)
+	request.session["totalAmt"] = totalValue
+
+	request.session["deliveryPrice"] = restaurantDesc['deliveryPrice']
+
 	productDetails =[]
 	if len(productsChosen) !=0:
 		productDetails = zip(productsChosen, sectionList, itemNameList)	
 
 	print("productDetails:",productDetails)
+	print("restaurantName:",restaurantDesc["name"])
+	request.session["isMenuPage"] =True
 	
-	return render(request, 'Foodhubinit/restaurantPage.html',{"restaurant":restaurantDesc,"menus":menu,"restaurantHours":restaurantHours,"dest_address":address,"order_type":order_type,"productsChosen":productDetails})
-	pass
+	return render(request, 'Foodhubinit/restaurantPage.html',
+		{"restaurant":restaurantDesc,
+		"menus":menu,
+		"restaurantHours":restaurantHours,
+		"dest_address":address,
+		"order_type":order_type,
+		"productsChosen":productDetails,
+		"restaurantName":restaurantDesc["name"],
+		'subTotal':totalPrice,
+		'salesTax':restaurantDesc["taxRate"],
+		'deliveryPrice':restaurantDesc['deliveryPrice'],
+		'totalAmt': request.session["totalAmt"],
+		"isMenuPage":True})
 
 def getRestaurantMenu(apiKey):
 	URL = "https://api.eatstreet.com/publicapi/v1/restaurant/"+apiKey+"/menu";
