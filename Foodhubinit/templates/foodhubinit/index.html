@@ -23,10 +23,15 @@
     </div>
     <div id="navbar" class="collapse navbar-collapse">
       <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
-        <li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
-        <li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
-        <li><a id="logout" href="{% url 'logout' %}" style="display:none">Logout</a>
-        </li>
+      	{% if isLoggedIn %}
+      		<li style="padding-top: 2%"><a id="logout" style ="color: white;font-family: Arial black" href="{% url 'logout' %}">Logout</a>
+        	</li>
+        	<li><a id="profile" style ="color: white;font-family: Arial black;font-size:250%;overflow: hidden;" href="{% url 'account' %}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span style="font-size: 40%;vertical-align: middle; height: 100%;top: 0;">{{username}}</span></a>
+        	</li>
+        {% else %}
+        	<li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
+        	<li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
+        {% endif %}
         <li style="padding-top: 10px;cursor: pointer;" onclick="handleCartClick()" class="pull-right">
 	        <div style="font-size:300%;color:white;height:100%;padding:0 10px"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
 	        </div>
@@ -90,17 +95,17 @@
 </div>
 {% if capitals %}
 <div class="groupContainer">
-	<div class="s-row menuItemrow">
+	<div class="s-row menuItemrow c-row">
 {% for city in capitals|slice:":15" %}
-	<a href="{% url 'city' city_name=city %}" class="displayInfo col-xs-4">{{city}}</a>
+	<a href="{% url 'city' city_name=city %}" class="displayInfo col-xs-3">{{city}}</a>
 	{% if forloop.counter|divisibleby:3 %}
 	</div>
 	{% if forloop.counter != 15 %}
-		<div class="s-row menuItemrow">
+		<div class="s-row menuItemrow c-row">
 	{% endif %}
 	{% endif %}
 {% endfor %}
-<div class="descriptionContainer">
+<div class="descriptionContainer c-row">
 <a href="{% url 'listStates' %}" style="margin-top:10%">View all Cities </a>
 </div>
 </div>

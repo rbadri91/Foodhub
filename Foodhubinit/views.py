@@ -31,14 +31,22 @@ def index(request):
 	request.session['cities'] = {}
 	request.session.modified = True
 
+	isLoggedIn =False
+	username =""
+	if request.user.is_authenticated():
+		isLoggedIn = True
+		username = request.user.username
+
 	productsChosen = list();
 	sectionList = list();
 	itemNamesList = list();
 
-	orderType = "delivery"
+	print("in index function")
+	order_type = "delivery"
 
 	if "order_type" in request.session:
 		order_type = request.session["order_type"]
+
 	if order_type == "delivery":
 		order_type ="Delivery"
 	else:
@@ -103,12 +111,99 @@ def index(request):
 		"totalAmt":totalAmount,
 		"deliveryMin":deliveryMin,
 		"deliveryPrice":deliveryPrice,
-		"salesTax":salesTax
+		"salesTax":salesTax,
+		"isLoggedIn":isLoggedIn,
+		"username":username
 		})
 
 @login_required
 def home(request):
-    return render(request, 'Foodhubinit/home.html')    
+	json_data = open('Foodhubinit/static/Foodhub/json/us_state_capitals.json')
+	data1 = json.load(json_data)
+	capitals =list()
+	request.session['cities'] = {}
+	request.session.modified = True
+
+	isLoggedIn =False
+	username = request.user.username
+
+	productsChosen = list();
+	sectionList = list();
+	itemNamesList = list();
+
+	print("in index function")
+	order_type = "delivery"
+
+	if "order_type" in request.session:
+		order_type = request.session["order_type"]
+
+	if order_type == "delivery":
+		order_type ="Delivery"
+	else:
+		order_type ="Pick Up"
+
+	address =""
+	productDetails=[]
+	if "order_address" in request.session:
+		address = request.session["order_address"]
+
+	restaurantName =""
+	if "restaurantName" in request.session:
+		restaurantName = request.session["restaurantName"]	
+
+	if "productsChosen" in request.session:
+		productsChosen = request.session["productsChosen"]
+
+	if "sectionNames" in request.session:
+		sectionList = request.session["sectionNames"]
+
+	if "itemNameList" in request.session:
+		itemNamesList = request.session["itemNameList"]
+
+	totalPrice =0
+
+	if "subTotal" in request.session:
+		totalPrice = request.session["subTotal"] 
+
+	totalAmount =0
+
+	if 'totalAmt' in request.session:
+		totalAmount = request.session["totalAmt"]
+
+	deliveryMin =0.0
+	if 'deliveryMin' in request.session:
+		deliveryMin = request.session["deliveryMin"]
+
+	deliveryPrice =0.0
+	if 'deliveryPrice' in request.session:
+		deliveryPrice = request.session["deliveryPrice"]	
+
+	salesTax =0.0
+	if 'salestax' in request.session:
+		salesTax = request.session["salestax"]	
+
+	productDetails =[]
+	if len(productsChosen) !=0:
+		productDetails = zip(productsChosen, sectionList, itemNamesList)	
+
+				
+	request.session["isMenuPage"] =False
+	
+	for attribute, value in data1.items():
+		capitals.append(value['capital'])
+	return render(request, 'Foodhubinit/home.html',
+		{"capitals":capitals,
+		"order_type":order_type,
+		"dest_address":address,
+		"restaurantName":restaurantName,
+		"productsChosen":productDetails,
+		"subTotal":totalPrice,
+		"totalAmt":totalAmount,
+		"deliveryMin":deliveryMin,
+		"deliveryPrice":deliveryPrice,
+		"salesTax":salesTax,
+		"username":username
+		})   
 
 def signup(request):
     if request.method == 'POST':
@@ -116,8 +211,9 @@ def signup(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
+            user.first_name = first_name
+            user.last_name = last_name
             user.save()
-
 
             current_site = get_current_site(request)
             subject = 'Activate Your MySite Account'
@@ -163,7 +259,13 @@ def listStates(request):
 	sectionList = list();
 	itemNamesList = list();
 
-	orderType = "delivery"
+	isLoggedIn =False
+	username =""
+	if request.user.is_authenticated():
+		isLoggedIn = True
+		username = request.user.username
+
+	order_type = "delivery"
 
 	if "order_type" in request.session:
 		order_type = request.session["order_type"]
@@ -229,7 +331,9 @@ def listStates(request):
 		"totalAmt":totalAmount,
 		"deliveryMin":deliveryMin,
 		"deliveryPrice":deliveryPrice,
-		"salesTax":salesTax})
+		"salesTax":salesTax,
+		"isLoggedIn":isLoggedIn,
+		"username":username})
 
 def cities(request,state_name):
 	json_data = open('Foodhubinit/static/Foodhub/json/cities.json')
@@ -240,7 +344,13 @@ def cities(request,state_name):
 	sectionList = list();
 	itemNamesList = list();
 
-	orderType = "delivery"
+	isLoggedIn =False
+	username =""
+	if request.user.is_authenticated():
+		isLoggedIn = True
+		username = request.user.username
+
+	order_type = "delivery"
 
 	if "order_type" in request.session:
 		order_type = request.session["order_type"]
@@ -313,7 +423,9 @@ def cities(request,state_name):
 		"totalAmt":totalAmount,
 		"deliveryMin":deliveryMin,
 		"deliveryPrice":deliveryPrice,
-		"salesTax":salesTax})
+		"salesTax":salesTax,
+		"isLoggedIn":isLoggedIn,
+		"username":username})
 
 def city(request,city_name):
 	json_data = open('Foodhubinit/static/Foodhub/json/cities.json')
@@ -365,7 +477,13 @@ def city(request,city_name):
 	sectionList = list();
 	itemNamesList = list();
 
-	orderType = "delivery"
+	isLoggedIn =False
+	username =""
+	if request.user.is_authenticated():
+		isLoggedIn = True
+		username = request.user.username
+
+	order_type = "delivery"
 
 	if "order_type" in request.session:
 		order_type = request.session["order_type"]
@@ -435,13 +553,28 @@ def city(request,city_name):
 		"totalAmt":totalAmount,
 		"deliveryMin":deliveryMin,
 		"deliveryPrice":deliveryPrice,
-		"salesTax":salesTax})	
+		"salesTax":salesTax,
+		"isLoggedIn":isLoggedIn,
+		"username":username})	
 
 def custom_login(request):
     if request.user.is_authenticated():
         return redirect('home')
     else:
         return login(request)
+
+def profile(request):
+	fName = request.user.first_name
+	lName = request.user.last_name
+	email =  request.user.email
+	return render(request, 'Foodhubinit/profile.html',{
+		"fName":fName,
+		"lName":lName,
+		"email":email
+		})
+
+def account(request):
+	return render(request, 'Foodhubinit/account.html')
 
 
 def getRestaurants(type,place):

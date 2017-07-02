@@ -1,0 +1,88 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	
+	<link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+	<link href="//gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
+</head>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+	<script type="text/plain" src=//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+	<script src="//gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<style>
+body{
+    font-family: "Open Sans", sans-serif;
+    color: #3e454c;
+    line-height: 1;
+}
+html{
+	margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+</style>
+<body>
+	<header class="cd-main-header">
+		<a href="#0" class="cd-nav-trigger"><span></span></a>
+		<div class="navbar-header logoHeader">
+		<a class="navbar-brand profileNav mainlogo" style="color: white;font-size: 300%" href="/">
+                Foodhub
+        </a>	
+		</div>
+		<nav class="cd-nav">
+			<ul class="cd-top-nav">
+				<li><a style ="color: white;font-family: Arial black;overflow: hidden;" href="/">Home</a></li>
+				<li><a style ="color: white;font-family: Arial black;overflow: hidden;" href="/logout">Logout</a></li>
+			</ul>
+		</nav>
+	</header>
+	{% include "shoppingCart/cartView.html" %}
+	<div class="profileContainer">
+
+		<nav class="cd-side-nav">
+			<ul>
+				<li class="profile active">
+						<a id ="profile" style="cursor:pointer" onclick="handleClick(this)" href="javascript:void(0)"><i class="fa fa-info" aria-hidden="true"></i> Profile</a>
+				</li>
+				<li class="Address">
+						<a id ="Address" style="cursor:pointer" onclick="handleClick(this)" href="javascript:void(0)"><i class="fa fa-address-book-o" aria-hidden="true"></i>
+						Addresses</a>
+				</li>
+				<li class="wallet">
+						<a id ="wallet" style="cursor:pointer" onclick="handleClick(this)" href="javascript:void(0)"><i class="fa fa-credit-card" aria-hidden="true"></i>
+						Wallet
+						</a>
+				</li>
+				<li class="orderHistory">
+						<a id ="orders" style="cursor:pointer" onclick="handleClick(this)" href="javascript:void(0)"><i class="fa fa-history" aria-hidden="true"></i> Order History</a>
+				</li>
+				<li class="favorites">
+						<a id ="settings" style="cursor:pointer" onclick="handleClick(this)" href="javascript:void(0)"><i class="fa fa-heart" aria-hidden="true"></i> Favorites</a>
+				</li>
+			</ul>	
+		</nav>
+		<div class="content-wrapper">
+			<!-- <h1>Page content here</h1> -->
+		</div>
+	</div>
+	<script src ="//cdn.jsdelivr.net/jquery.menu-aim/0.1/jquery.menu-aim.min.js"></script>
+	<script src="{% static 'Foodhub/js/handleUserProfile.js' %}"></script>
+</body>

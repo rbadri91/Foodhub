@@ -17,4 +17,6 @@ urlpatterns = [
     url(r'^accounts/login/$', auth_views.login, {'template_name': 'foodhubinit/login.html','redirect_authenticated_user': True}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': 'login'}, name='logout'),
     url(r'^signup/$', views.signup, name='signup'),
+    url(r'^account/$', views.account, name='account'),
+    url(r'^profile/$', views.profile, name='profile'),
 ]

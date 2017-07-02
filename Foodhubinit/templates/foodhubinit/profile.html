@@ -1,0 +1,81 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	
+	<!-- <link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" /> -->
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+	<link href="//gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
+</head>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+	<script type="text/plain" src=//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+	<script src="//gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<body>
+<div class="profilePageContainer">
+<div class="margin-extra-top">
+	<div class="profileBody">
+	<div class="editPart" id ="editName" onclick="editNameClick()">
+		<h4 class="restaurantInfoHeader">Name</h4>	
+		<h3>{{fName}} {{lName}}</h3>
+	</div>
+	<form id ="editNameForm" style ="display: none">
+		<h3 class="editTitle">Edit Name</h3>
+		<div class="editFieldContainer">
+			<div class="b-row ">
+				<div class="f-form col-sm-5">
+					<label for="firstName">FirstName:</label>
+					<input type="text" name="fName" id ="fName" class=" f-form-field f-form-control">
+				</div>
+				<div class="f-form col-sm-5">
+					<label for="firstName">LastName:</label>
+					<input type="text" name="lName" id ="lName" class=" f-form-field f-form-control">
+				</div>
+			</div>
+			<div class="col-xs-12 setMargin setMargin-top">
+      				<div class="col-sm-5 col-md-offset-1">
+      				<button  onclick = "handleSaveAddres()" class=" btn fs-btn btn-primary btn-lg center-block" href="#">Save</button></div>
+      				<div class="col-sm-5">
+        			<button data-popup2-close="popup-2" class=" btn btn-primary fs-btn btn-lg center-block" href="#">Cancel</button></div>
+      		</div>
+			<div>
+			</div>
+		</div>
+	</form>
+	<div class="editPart" onclick="editEmailClick()">
+		<h4 class="restaurantInfoHeader">Email</h4>	
+		<h3>{{email}}</h3>
+	</div>
+	<div class="editPart" onclick="editPasswordClick()">
+		<h4 class="restaurantInfoHeader">Password</h4>	
+		<h3>********</h3>
+	</div>
+	</div>
+</div>
+</div>
+<script type="text/javascript">
+var fName = "{{fName}}"
+var lName = "{{lName}}"
+	$(function(){
+		document.getElementById("fName").value = fName
+		document.getElementById("lName").value = lName
+	});
+</script>
+<script>
+function editNameClick(){
+	document.getElementById("editNameForm").style.display="block";
+	document.getElementById("editName").style.display="none";
+}
+</script>
+</body>	

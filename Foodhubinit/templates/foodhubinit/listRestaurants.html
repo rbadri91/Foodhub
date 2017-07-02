@@ -46,9 +46,15 @@ function calcDistane(lat1, lon1,address_coord) {
 	        <!-- </form> -->
 	    </div>
       <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
-        <li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
-        <li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
-        <li><a id="logout" href="{% url 'logout' %}" style="display:none">Logout</a></li>
+        {% if isLoggedIn %}
+      		<li style="padding-top: 2%"><a id="logout" style ="color: white;font-family: Arial black" href="{% url 'logout' %}">Logout</a>
+        	</li>
+        	<li><a id="profile" style ="color: white;font-family: Arial black;font-size:250%;overflow: hidden;" href="{% url 'profile' %}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span style="font-size: 40%;vertical-align: middle; height: 100%;top: 0;">{{username}}</span></a>
+        	</li>
+        {% else %}
+        	<li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
+        	<li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
+        {% endif %}
         <li style="padding-top: 10px;cursor: pointer;" onclick="handleCartClick()" class="pull-right">
 	        <div style="font-size:300%;color:white;height:100%;padding:0 10px"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
 	        </div>
