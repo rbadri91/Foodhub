@@ -661,6 +661,7 @@ h6{
     margin-bottom: 30px;
 }
 .PanelHeader{
+  width: 100%;
   display: flex;
   -webkit-box-align: center;
   margin-top: 2%;
@@ -1028,6 +1029,13 @@ h6{
 .margin-extra-top{
   top: 35px;
   position: relative;
+}
+.editPart{
+    position: relative;
+    margin-bottom: 3px;
+    padding: 30px;
+    background-color: #FFF;
+    cursor: pointer;
 }
 .editPart{
     position: relative;

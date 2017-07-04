@@ -675,8 +675,6 @@ def find_restaurants(request,address):
 	restaurants = getRestaurants(orderType,address)
 
 
-	print("sortBy here:",sortBy)
-	print("type sortBy here:",type(sortBy))
 	if sortBy!="default":
 		restaurants.sort(key = lambda x: x[sortBy])
 
@@ -688,7 +686,7 @@ def find_restaurants(request,address):
 	cuisines = getCuisines(restaurants);
 	request.session["order_type"] = orderType;
 	displayRestaurants,page_range=getRestaurantDetails(restaurants,pageNum)
-	print("restaurants here:",restaurants)
+	
 	request.session["isMenuPage"] =False
 
 
@@ -751,7 +749,6 @@ def restaurant_description(request, restaurant_name):
 				restaurantDesc = restaurant
 				break
 
-	print("restaurantDesc here:",restaurantDesc);
 	menu= getRestaurantMenu(restaurantDesc['apiKey'])
 	restaurantHoursUnsorted = restaurantDesc['hours']
 	restaurantHours = dict();
@@ -781,7 +778,6 @@ def restaurant_description(request, restaurant_name):
 
 	if request.session["order_type"]:
 		order_type = request.session["order_type"]
-	print("address here:",address)
 	if order_type == "delivery":
 		order_type ="Delivery"
 	else:
