@@ -19,4 +19,6 @@ urlpatterns = [
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^account/$', views.account, name='account'),
     url(r'^profile/$', views.profile, name='profile'),
+    url(r'^profile/nameedit/$', views.edit_name, name='edit_name'),
+    url(r'^profile/emailedit/$', views.edit_email, name='edit_email'),
 ]

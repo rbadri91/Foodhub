@@ -1,12 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode,  urlsafe_base64_decode
 from django.template.loader import render_to_string
+from django.core.urlresolvers import reverse
+from django.contrib import messages
 import json
 from bson import json_util
 from bson.json_util import dumps
@@ -18,7 +21,7 @@ import collections
 import operator
 from django.contrib.auth import views
 
-from Foodhubinit.forms import SignUpForm
+from Foodhubinit.forms import SignUpForm, EditNameForm, EditEmailForm
 from Foodhubinit.tokens import account_activation_token
 import json
 from decimal import *
@@ -610,13 +613,37 @@ def custom_login(request):
         return login(request)
 
 def profile(request):
+	form = {}
+	editName = False
+	editEmail=False
+	editPassWord = False
+
+	if "isNameEdit" in request.session:
+		editName = True
+		form = EditNameForm(initial={'first_name':request.user.first_name , 'last_name': request.user.last_name})
+		del request.session["isNameEdit"]
+
+	if "isEmailEdit" in request.session:
+		editEmail = request.session["isEmailEdit"]
+		form = EditEmailForm()
+		if editEmail == False:
+			editEmail = True
+			messages.add_message(request, messages.ERROR, 'Emails Do not Match')
+		del request.session["isEmailEdit"]	
+		
 	fName = request.user.first_name
 	lName = request.user.last_name
 	email =  request.user.email
+
+	print("editEmail in profile",editEmail)
 	return render(request, 'Foodhubinit/profile.html',{
 		"fName":fName,
 		"lName":lName,
-		"email":email
+		"email":email,
+		'form':form,
+		'editName':editName,
+		'editEmail':editEmail,
+		'editPassWord':editPassWord
 		})
 
 def account(request):
@@ -830,3 +857,39 @@ def getRestaurantMenu(apiKey):
 	return JSON_object;
 
 
+def edit_name(request):
+
+	user = request.user
+	form = EditNameForm(request.POST or None, instance=user)
+	if request.method == 'POST':
+		print("it comes inside post request")
+		if form.is_valid():
+			print('Form is valid')
+
+			user.first_name = request.POST['first_name']
+			user.last_name = request.POST['last_name']
+			print("it comes inside form")
+
+			user.save()
+			return HttpResponseRedirect('%s'%(reverse('account')))
+
+	else:
+		request.session['isNameEdit'] = True
+		return redirect('account')
+	# return render(request, 'Foodhubinit/profile.html', {'form': form,'editForm':True})
+
+def edit_email(request):
+	user = request.user
+	form = EditEmailForm(request.POST or None, instance=user)
+	if request.method == 'POST':
+		print("it comes inside post request")
+		if form.is_valid():
+			user.email = request.POST['email']
+			user.save()
+			return HttpResponseRedirect('%s'%(reverse('account')))
+		else:
+			request.session['isEmailEdit'] = False
+			return redirect('account')	
+	else:
+		request.session['isEmailEdit'] = True
+		return redirect('account')			

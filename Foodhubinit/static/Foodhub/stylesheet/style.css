@@ -83,7 +83,7 @@ body {
     display: flex;
     font-family: 'Allan', Helvetica, Arial, sans-serif;
     font-size: 70px;
-    line-height: 75px;
+    /*line-height: 75px;*/  
     align-items: center;
     color: white;
     font-size: 200%;
@@ -1011,9 +1011,20 @@ h6{
   position: relative;
   top:15px;
   background: #efefef;
-  width: calc(100vw - 130px);
-  right: 40px;
+  
 }
+@media (min-width: 768px){
+  .profilePageContainer{
+    width: calc(100vw - 130px);
+    right: 40px;
+  }  
+}
+@media (max-width: 768px){
+  .profilePageContainer{
+    width: 100%;
+  }  
+}
+
 .margin-extra-top{
   top: 35px;
   position: relative;
@@ -1074,4 +1085,11 @@ h6{
 }
 .setMargin-top{
   margin-top: 25px;
+}
+.hideName{
+  display: none !important;
+}
+.editWrapper{
+  text-decoration: none;
+  color: grey;
 }
