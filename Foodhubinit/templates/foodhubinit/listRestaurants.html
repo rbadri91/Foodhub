@@ -154,7 +154,7 @@ function calcDistane(lat1, lon1,address_coord) {
 		</div>
 		<div class="rDescription">
 			<h4>
-			<a style="font-family: Arial black;" href="{% url 'restaurant' restaurant_name=restaurant.name %}">{{restaurant.name}}</a>
+			<a style="font-family: Arial black;" href="{% url 'restaurant' restaurant_name=restaurant.name|urlencode %}">{{restaurant.name}}</a>
 			</h4>
 			<div style= "text-overflow: ellipsis;overflow: hidden;width:150px;white-space: nowrap;">{{restaurant.foodTypes|join:","}}</div>
 			<div>

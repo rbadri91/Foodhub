@@ -10,19 +10,60 @@ from django.template.loader import render_to_string
 import json
 from bson import json_util
 from bson.json_util import dumps
+import urllib
 import urllib.request,urllib.parse
 import requests
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import collections
 import operator
+from django.contrib.auth import views
 
 from Foodhubinit.forms import SignUpForm
 from Foodhubinit.tokens import account_activation_token
 import json
 from decimal import *
+from functools import wraps
 
 
 # Create your views here.
+
+class persist_session_vars(object):
+    """
+    Some views, such as login and logout, will reset all session state.
+    (via a call to ``request.session.cycle_key()`` or ``session.flush()``).
+    That is a security measure to mitigate session fixation vulnerabilities.
+
+    By applying this decorator, some values are retained.
+    Be very aware what find of variables you want to persist.
+    """
+
+    def __init__(self, vars):
+        self.vars = vars
+
+    def __call__(self, view_func):
+
+        @wraps(view_func)
+        def inner(request, *args, **kwargs):
+            # Backup first
+            session_backup = {}
+            for var in self.vars:
+                try:
+                	print("session var saved here:",var)
+                	session_backup[var] = request.session[var]
+                except KeyError:
+                    pass
+
+            # Call the original view
+            response = view_func(request, *args, **kwargs)
+
+            # Restore variables in the new session
+            for var, value in session_backup.items():
+            	print("variables restored:",var);
+            	request.session[var] = value
+
+            return response
+
+        return inner
 
 def index(request):
 	json_data = open('Foodhubinit/static/Foodhub/json/us_state_capitals.json')
@@ -557,6 +598,11 @@ def city(request,city_name):
 		"isLoggedIn":isLoggedIn,
 		"username":username})	
 
+@persist_session_vars(['restaurants','dest_address','order_type','order_address','productsChosen','sectionNames','itemNameList','subTotal','salestax','totalAmt','deliveryPrice','deliveryMin','cities'])
+def login(request, *args, **kwargs):
+	print("it comes to this point")
+	return views.login(request, *args, **kwargs)
+
 def custom_login(request):
     if request.user.is_authenticated():
         return redirect('home')
@@ -671,24 +717,35 @@ def object_compare(x, y):
 def restaurant_description(request, restaurant_name):
 
 	restaurantDesc =dict()
-	if request.session["restaurants"]:
+	restaurant_name = urllib.parse.unquote(restaurant_name)
+	if "restaurants" in request.session:
 		for restaurant in request.session["restaurants"]:
 			if restaurant["name"] == restaurant_name:
 				restaurantDesc = restaurant
 				break
 
+	print("restaurantDesc here:",restaurantDesc);
 	menu= getRestaurantMenu(restaurantDesc['apiKey'])
 	restaurantHoursUnsorted = restaurantDesc['hours']
 	restaurantHours = dict();
 	weekdays =["Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday","Saturday"]
 	for day in weekdays:
-		restaurantHours[day] = restaurantHoursUnsorted[day];
+		if day in restaurantHoursUnsorted:
+			restaurantHours[day] = restaurantHoursUnsorted[day]
+		else:
+			restaurantHours[day] =["Holiday"]	
 
 	address="";
 	order_type ="delivery"
 	productsChosen =list();
 	sectionList = list();
 	itemNameList = list();
+
+	isLoggedIn =False
+	fullName =""
+	if request.user.is_authenticated():
+		isLoggedIn = True
+		fullName = request.user.get_full_name()
 
 	if "order_address" in request.session:
 		address = request.session["order_address"]
@@ -756,7 +813,9 @@ def restaurant_description(request, restaurant_name):
 		'salesTax':restaurantDesc["taxRate"],
 		'deliveryPrice':restaurantDesc['deliveryPrice'],
 		'totalAmt': request.session["totalAmt"],
-		"isMenuPage":True})
+		"isMenuPage":True,
+		"isLoggedIn":isLoggedIn,
+		"fullName":fullName})
 
 def getRestaurantMenu(apiKey):
 	URL = "https://api.eatstreet.com/publicapi/v1/restaurant/"+apiKey+"/menu";

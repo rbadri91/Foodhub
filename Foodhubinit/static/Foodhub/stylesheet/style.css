@@ -573,12 +573,11 @@ h6{
   width:50%;
 }
 .checkBoxWrapper{
-  padding-top: 10px 0;
+  padding: 10px 0;
 }
+
 .checkBoxinnerWrapper{
   margin-bottom: 0px;
-}
-.checkBoxinnerWrapper{
     user-select: none;
     position: relative;
     height: 22px;

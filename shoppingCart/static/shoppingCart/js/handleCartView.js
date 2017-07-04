@@ -133,7 +133,12 @@ function constructSubTotalRow(subTotalWrapper,divId,labelName,value){
 	var itemValueWrapper = 	document.createElement("div");
 		itemValueWrapper.id =divId;
 		itemValueWrapper.className ="chosenItemValue text-right";
-		itemValueWrapper.textContent = value;
+		if(value !=0.0){
+			itemValueWrapper.textContent = "$" + value;
+		}else{
+			itemValueWrapper.textContent = "Free";
+		}
+		
 	itemDescription.appendChild(itemValueWrapper);
 
 }

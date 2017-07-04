@@ -51,12 +51,12 @@ def addToCart(request):
 	if "subTotal" in request.session:
 		totalPrice = request.session["subTotal"]
 
-	subPrice += chosenProductDetails['price'];
+	subPrice += (chosenProductDetails['price'] * chosenProductDetails['qty']);
 	if 'customizationList' in chosenProductDetails:
 		for customList in chosenProductDetails['customizationList']:
 			subPrice += customList['price']	
 
-	totalPrice +=(subPrice * chosenProductDetails['qty'])
+	totalPrice +=subPrice
 	totalPrice = round(totalPrice,3)
 	print('totalPrice here:',totalPrice)
 	totalAmt =0
@@ -67,7 +67,11 @@ def addToCart(request):
 	if 'totalAmt' in request.session:
 		totalAmount = request.session["totalAmt"]
 
-	totalAmount += (subPrice * chosenProductDetails['qty']);
+	if totalAmount == 0:
+		totalAmount += subPrice + request.session["salesTax"]
+	else:
+		totalAmount += subPrice;
+		
 	request.session["totalAmt"] = round(totalAmount,3)
 	request.session["subTotal"] = totalPrice
 
@@ -105,13 +109,13 @@ def removeFromCart(request):
 		print("idx  :", idx)	
 		if product['name'] == request.POST["productName"]:
 			productDeleted = productsChosen[idx]
-			subPrice = productDeleted['price']
+			subPrice = (productDeleted['price']* productDeleted['qty'])
 			
 			if 'customizationList' in productDeleted:
 				for customList in productDeleted['customizationList']:
 					subPrice +=customList['price']
 			
-			totalPrice -= (subPrice * productDeleted['qty'])
+			totalPrice -= subPrice
 			totalPrice = round(totalPrice,3)
 			request.session["subTotal"] = totalPrice
 			totalAmount -= (subPrice * productDeleted['qty']);

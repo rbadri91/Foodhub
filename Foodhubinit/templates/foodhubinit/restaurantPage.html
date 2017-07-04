@@ -43,10 +43,10 @@
        {% if isLoggedIn %}
       		<li style="padding-top: 2%"><a id="logout" style ="color: white;font-family: Arial black" href="{% url 'logout' %}">Logout</a>
         	</li>
-        	<li><a id="profile" style ="color: white;font-family: Arial black;font-size:250%;overflow: hidden;" href="{% url 'profile' %}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span style="font-size: 40%;vertical-align: middle; height: 100%;top: 0;">{{username}}</span></a>
+        	<li><a id="profile" style ="color: white;font-family: Arial black;font-size:250%;overflow: hidden;" href="{% url 'profile' %}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span style="font-size: 40%;vertical-align: middle; height: 100%;top: 0;">{{fullName}}</span></a>
         	</li>
         {% else %}
-        	<li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}" >Login</a></li>
+        	<li style="padding-top: 2%"><a id="login" style ="color: white;font-family: Arial black" href="{% url 'login' %}?next={{request.path}}" >Login</a></li>
         	<li style="padding-top: 5%"><a id="signup" class="signupText" href="{% url 'signup' %}">Signup</a></li>
         {% endif %}
         <li style="padding-top: 10px;cursor: pointer;" class="pull-right">
