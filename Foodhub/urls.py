@@ -22,6 +22,7 @@ admin.autodiscover()
 urlpatterns = [
 	url(r'^', include('Foodhubinit.urls')),
 	url(r'^shoppingCart/', include('shoppingCart.urls',namespace='shoppingCart')),
+    url(r'^orders/', include('orders.urls',namespace='orders')),
     url(r'^admin/', admin.site.urls)
 ]
 

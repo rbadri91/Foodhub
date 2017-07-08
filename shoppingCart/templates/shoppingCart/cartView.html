@@ -174,10 +174,10 @@
 		<div id ="cartFooterContainer" class="cartFooter">
 			<div class="proceedButtonContainer">
 			<div class="proceedButtonWrapper">
-				<button class="btn proceedButton f-btn f-btn-full btn-info">
+				<a class="btn proceedButton f-btn f-btn-full btn-info" href='{% url "orders:confirmOrder" %}'>
 					<span> Proceed To Checkout</span>
 					<span id ="totalValue">$ {{totalAmt}}</span>
-				</button>
+				</a>
 			</div>
 			</div>
 		</div>

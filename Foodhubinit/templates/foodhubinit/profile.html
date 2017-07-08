@@ -80,11 +80,55 @@
 		</div>
 	</form>
 	</div>
-	<div class="editPart" onclick="editPasswordClick()">
+
+	<a  class="editWrapper" href="{% url 'password_change' %}">
+	<div class="editPart {% if editPassword %} hideName {% endif %}" onclick="editPasswordClick()">
 		<h4 class="restaurantInfoHeader">Password</h4>	
 		<h3>********</h3>
+	</div></a>
+
+	<div class="editPart {% if not editPassword %} hideName {% endif %}">
+
+		<form action = "{% url 'password_change' %}" method="post">
+		{% csrf_token %}
+		<div>
+			{% if form.errors %}
+			    <p class="errornote">
+			    Please correct the error or errors below.
+			    </p>
+			{% endif %}
+			<h1>Password change</h1>
+			<p>Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly.</p>
+
+			<fieldset class="module aligned wide">
+
+			<div class="b-row ">
+				{% for field in form %}
+					
+					<div class="f-form col-sm-5">
+						{{ field.label_tag }}<br>
+						{{ field }}
+					</div>	
+					{% if forloop.counter == 0 %}
+					</div>
+					<div class="b-row ">
+					{% endif %}	
+				{% endfor %}
+			</div>
+
+		</fieldset>
+		<div class="col-xs-12 setMargin setMargin-top center-block text-center">
+		    <button class="btn btn-info btn-lg"  type="submit" value="Change Password">Change Password</button>
+		    <button class=" btn btn-info  btn-lg " onclick = "return handleCancelEmailClick()">Cancel</button>
+		</div>
+		</div>
+		</form>
+
+
+
 	</div>
-	</div>
+
+</div>
 </div>
 </div>
 <script type="text/javascript">
@@ -98,6 +142,10 @@ function handleCancelClick(){
 	location.href = url;
 }
 function handleCancelEmailClick(){
+	var url = "{% url 'account' %}"
+	location.href = url;
+}
+function handleCancelPasswordClick(){
 	var url = "{% url 'account' %}"
 	location.href = url;
 }

@@ -2,12 +2,14 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from localflavor.us.forms import USPhoneNumberField
 
 class SignUpForm(UserCreationForm):
 	first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
 	last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
 	email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
-
+	phone_no = USPhoneNumberField(required=False, label="Phone")
+	
 	def __init__(self, *args, **kwargs):
 		super(SignUpForm, self).__init__(*args, **kwargs)
 		self.fields['password1'].help_text = "Your password can't be too similar to your other personal information.Your password must contain at least 8 characters"
@@ -101,4 +103,56 @@ class EditEmailForm(forms.ModelForm):
       u.email = self.cleaned_data['email']
       u.save()
       profile = super(EditEmailForm, self).save(*args,**kwargs)
-      return profile      
+      return profile  
+
+class PasswordForm(forms.Form):
+	old_password_flag = True
+	old_password = forms.CharField(label="Old Password", min_length=6, widget=forms.PasswordInput(attrs={'class': 'f-form-field f-form-control'}))
+	password = forms.CharField(label='New Password',widget=forms.PasswordInput(attrs={'class': 'f-form-field f-form-control'}))
+	confirm_password  = forms.CharField(label='Confirm Password',widget=forms.PasswordInput(attrs={'class': 'f-form-field f-form-control'}))
+
+	class Meta:
+		model = User
+		fields = ('password1', 'password2', )
+
+
+	def set_old_password_flag(self): 
+		#This method is called if the old password entered by user does not match the password in the database, which sets the flag to False
+		self.old_password_flag = False
+		return 0
+
+	def clean_old_password(self, *args, **kwargs):
+		old_password = self.cleaned_data.get('old_password')
+
+		if not old_password:
+			raise forms.ValidationError("You must enter your old password.")
+
+		if self.old_password_flag == False:
+			#It raise the validation error that password entered by user does not match the actucal old password.
+
+			 raise forms.ValidationError("The old password that you have entered is wrong.")
+
+		return old_password
+
+	def clean(self):
+		password1 = self.cleaned_data.get('password1')
+		password2 = self.cleaned_data.get('password2')
+	
+		
+		if password1:
+			if not password2:
+				raise forms.ValidationError("You must confirm your password")
+			if password1 != password2:
+				raise forms.ValidationError("Passwords don't match")
+
+		return self.cleaned_data 
+
+	def save(self, commit=True):
+		"""
+		Saves the new password.
+		"""
+		self.user.set_password(self.cleaned_data["password1"])
+		if commit:
+			self.user.save()
+		return self.user		
+

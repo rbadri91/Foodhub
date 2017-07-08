@@ -20,8 +20,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import collections
 import operator
 from django.contrib.auth import views
+from django.contrib.auth import update_session_auth_hash
 
-from Foodhubinit.forms import SignUpForm, EditNameForm, EditEmailForm
+from Foodhubinit.forms import SignUpForm, EditNameForm, EditEmailForm,PasswordForm
 from Foodhubinit.tokens import account_activation_token
 import json
 from decimal import *
@@ -630,12 +631,18 @@ def profile(request):
 			editEmail = True
 			messages.add_message(request, messages.ERROR, 'Emails Do not Match')
 		del request.session["isEmailEdit"]	
+
+	if "isPasswordEdit" in request.session:
+		editPassWord = request.session["isPasswordEdit"]
+		form = PasswordForm()
+		del request.session["isPasswordEdit"]
+
 		
 	fName = request.user.first_name
 	lName = request.user.last_name
 	email =  request.user.email
 
-	print("editEmail in profile",editEmail)
+	print("editPassWord in profile",editPassWord)
 	return render(request, 'Foodhubinit/profile.html',{
 		"fName":fName,
 		"lName":lName,
@@ -643,7 +650,7 @@ def profile(request):
 		'form':form,
 		'editName':editName,
 		'editEmail':editEmail,
-		'editPassWord':editPassWord
+		'editPassword':editPassWord
 		})
 
 def account(request):
@@ -888,4 +895,30 @@ def edit_email(request):
 			return redirect('account')	
 	else:
 		request.session['isEmailEdit'] = True
-		return redirect('account')			
+		return redirect('account')
+
+@login_required
+def edit_password(request):
+	user = request.user
+	form = PasswordForm(request.POST or None)
+	if request.method == 'POST':
+		print("in post request")
+		old_password = request.POST.get("old_password")
+		new_password = request.POST.get("password")
+		confirm_password = request.POST.get("confirm_password")
+		if request.POST.get("old_password"):
+			print("it comes inside")
+			user = User.objects.get(username= request.user.username)
+			#User entered old password is checked against the password in the database below.
+			print("user here:",user)
+			if user.check_password('{}'.format(old_password)) == False:
+				form.set_old_password_flag()
+
+		if form.is_valid():
+			user.set_password('{}'.format(new_password))
+			user.save()
+			update_session_auth_hash(request, user)
+			return HttpResponseRedirect('%s'%(reverse('account')))
+
+	request.session['isPasswordEdit'] = True
+	return redirect('account')			
