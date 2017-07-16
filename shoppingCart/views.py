@@ -63,8 +63,8 @@ def addToCart(request):
 	taxAmt =0.0;
 	deliveryMin =0.0;
 
-	if 'salesTax' in request.session:
-		taxAmt = request.session["salesTax"]
+	if 'salestax' in request.session:
+		taxAmt = request.session["salestax"]
 
 	print('taxAmt here 1:',taxAmt)
 	if 'totalAmt' in request.session:
