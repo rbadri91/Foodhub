@@ -175,7 +175,7 @@ function calcDistane(lat1, lon1,address_coord) {
 			<span class="text-center">Miniumum</span>
 		</div>
 		<div class="col-sm-3">
-			{% if restaurant.deliveryPrice == 0.0 %}
+			{% if 'deliveryPrice' not in restaurant or restaurant.deliveryPrice == 0.0 %}
 			<h5 class="text-center">Free</h5>
 			{% else %}
 			<h4 class="text-center">${{restaurant.deliveryPrice}}</h4>

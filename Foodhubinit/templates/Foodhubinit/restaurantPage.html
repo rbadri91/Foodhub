@@ -115,7 +115,7 @@
 		</div>
 		<div class="col-sm-3" style="border-right: 1px solid grey">
 			<span class="text-center center-block">Delivery Cost</span>
-			{% if restaurant.deliveryPrice == 0.0 %}
+			{% if 'deliveryPrice' not in restaurant or restaurant.deliveryPrice == 0.0 %}
 			<h5 class="text-center">Free</h5>
 			{% else %}
 			<h4 class="text-center">${{restaurant.deliveryPrice}}</h4>
