@@ -147,9 +147,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR,'static'),
-)
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR,'static'),
+# )
+STATICFILES_DIRS = ()
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 SEND_EMAIL_RECEIPTS = True
 INVOICE_FROM_EMAIL ="billing@foodhub.com"
