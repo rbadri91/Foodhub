@@ -91,7 +91,7 @@
     </div>
   </div>
   </div>
-  <div class="s-row">
+  <div class="s-row" id="address_holder">
   <div class="col-sm-12">
     <div class="s-row">
       <span class="sectionHeader">Address</span>
@@ -220,7 +220,7 @@
       </div>
   </div>
   </div>
-  <div class="s-row saveAddressWrapper">
+  <div class="s-row saveAddressWrapper" id="save_addressBox">
     <div class="checkBoxinnerWrapper">
       <input name="saveAddress" class="checkboxclass" type="checkbox" onchange="handleSaveAddress()" {% if isMenuPage %} checked {% endif %}/>
       <label name="saveAddress" class="checkboxholder"></label>
@@ -264,7 +264,8 @@ $(function(){
   var order_type = "{{order_type}}"
   console.log("order_type here:",order_type);
   if(order_type === "Pick Up"){
-    document.getElementById('deliverInst').style.display="none";
+    document.getElementById('address_holder').style.display="none";//save_addressBox
+    document.getElementById('save_addressBox').style.display="none";
   }
 });
 

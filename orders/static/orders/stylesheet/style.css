@@ -62,7 +62,7 @@
     background: rgba(255,255,255,0);
     font-size: 1.5rem;
     font-weight: 500;
-    color: #grey !important;
+    color: grey !important;
     width: 100%;
     font-family: "Lato",sans-serif;
     transition:ease 0.25s all;
