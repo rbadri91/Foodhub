@@ -140,6 +140,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -154,3 +155,4 @@ SEND_EMAIL_RECEIPTS = True
 INVOICE_FROM_EMAIL ="billing@foodhub.com"
 DEFAULT_HTTP_PROTOCOL="http"
 STRIPE_DEFAULT_PLAN = True
+SITE_ID =1
