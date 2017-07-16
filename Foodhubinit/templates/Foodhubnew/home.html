@@ -1,0 +1,184 @@
+{% load static %}
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=0.8" />
+<link rel="stylesheet" type="text/css" href="{% static 'Foodhub/stylesheet/style.css' %}" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='http://fonts.googleapis.com/css?family=Allan:bold' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Cardo' rel='stylesheet' type='text/css'>
+<link href="https://fonts.googleapis.com/css?family=Lato:700" rel="stylesheet">
+</head>
+<nav class="navbar navbar-fixed-top navbar-inverse" style="background: red;border: none;">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand mainlogo" style="color: white;font-size: 300%" href="/">Foodhub</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
+      		<li style="padding-top: 2%"><a id="logout" style ="color: white;font-family: Arial black" href="{% url 'logout' %}">Logout</a>
+        	</li>
+        	<li><a id="profile" style ="color: white;font-family: Arial black;font-size:250%;overflow: hidden;" href="{% url 'account' %}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span style="font-size: 40%;vertical-align: middle; height: 100%;top: 0;">{{username}}</span></a>
+        	</li>
+        <li style="padding-top: 10px;cursor: pointer;" onclick="handleCartClick()" class="pull-right">
+	        <div style="font-size:300%;color:white;height:100%;padding:0 10px"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
+	        </div>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right"></ul>
+    </div>
+  </div>
+</nav>
+<body onload="initialize()">
+{% include "shoppingCart/cartView.html" %}
+<div class="locationContainer">
+	<div class="my-row specialRow">
+        <div class="v-m">
+        	<div id="findLoc" class="center-block"> 
+                            <h2 class="text-center" style="color: white; font-family: Arial Black">Order your food right from your place</h2>
+                            <div class="row center-block">
+                            <div  class="col-sm-3"></div>
+                            <div  class="col-sm-8">
+                            <input class="form-control center-block input-lg" style="width:60%;display: inline;font-family:Arial, FontAwesome" id="autocomplete" placeholder="&#xf041; Enter your address" onFocus="geolocate()" type="text">
+                            <button class="btn btn-primary btn-lg center-block" style ="background: red;display: inline;" onclick="handleFindRestaurants(this)"> Find Restaurants</button>
+                            </div>
+                            </div>
+          	</div>
+        </div>
+    </div>
+    <span class="attribution" style="color: white; font-family:Arial Black">Courtesy- freefoodphotos.com</span>  
+</div>
+<div id ="howToContainer">
+	<h3 class="text-center"> How it works</h3>
+	<div>
+		<div class="col-sm-4">
+			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden">
+			<img src="{% static "Foodhub/images/hotel.jpg" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="hotel image" >
+			</div>
+			<br>
+			<h4 class="text-center" style="color: white;font-family:Arial Black">Select a Restaurant from your location</h4>
+		</div>
+		<div class="col-sm-4">
+			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden">
+			<img src="{% static "Foodhub/images/food.png" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="food image" >
+			</div>
+			<br>
+			<h4 class="text-center" style="color: white;font-family:Arial Black">Select your choice and place your order</h4>
+		</div>
+		<div class="col-sm-4">
+			<div class="imageContainer center-block" style="border-radius: 35%;width:150px;height:150px;overflow: hidden;background: white">
+			<img src="{% static "Foodhub/images/delivery.png" %}" width=130 height = 130 style =" min-width: 100%;min-height: 100%;display: block;" alt="deliver image" >
+			</div>
+			<br>
+			<h4 class="text-center" style="color: white;font-family:Arial Black">Get your food deliverd at your doorstep</h4>
+		</div>
+	</div>
+</div>
+<!-- <div class="container" id="locationDisplay"> -->
+<div class="CitiesContainer">
+	<div class="col-xs-12 col-md-10 col-md-offset-1">
+<div class="innerContainer">
+<div class="menuheader-portion">
+<h3 class="menuHeading">Browse from over 10000 of restaurants across all the cities in the US</h3>
+</div>
+{% if capitals %}
+<div class="groupContainer">
+	<div class="s-row menuItemrow c-row">
+{% for city in capitals|slice:":15" %}
+	<a href="{% url 'city' city_name=city %}" class="displayInfo col-xs-3">{{city}}</a>
+	{% if forloop.counter|divisibleby:3 %}
+	</div>
+	{% if forloop.counter != 15 %}
+		<div class="s-row menuItemrow c-row">
+	{% endif %}
+	{% endif %}
+{% endfor %}
+<div class="descriptionContainer c-row">
+<a href="{% url 'listStates' %}" style="margin-top:10%">View all Cities </a>
+</div>
+</div>
+{% else %}
+   There are no cities to display
+{% endif %}
+</div>
+</div>
+</div>
+</body>
+<footer class="s-row footerContainer">
+<div class = "innerfooterContainer">
+<ul>
+	<li><a>About Me</a></li>
+</ul>
+</div>
+</footer>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min."></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
+{% csrf_token %}
+<script type="text/javascript">
+// using jQuery
+var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+</script>
+<script>
+var autocomplete,autocomplete3;
+function initialize() {
+        autocomplete = new google.maps.places.Autocomplete(
+        (document.getElementById('autocomplete')),
+                  { types: ['geocode'] });
+              google.maps.event.addListener(autocomplete, 'place_changed', function() {
+              });
+        autocomplete3 = new google.maps.places.Autocomplete(
+        (document.getElementById('autocomplete3')),
+                  { types: ['geocode'] });
+              google.maps.event.addListener(autocomplete3, 'place_changed', function() {
+              });        
+}
+function geolocate() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var circle = new google.maps.Circle({
+              center: geolocation,
+              radius: position.coords.accuracy
+            });
+            autocomplete.setBounds(circle.getBounds());
+            autocomplete3.setBounds(circle.getBounds());
+          });
+        }
+}
+
+function handleFindRestaurants(){
+	console.log()
+	var addressVal = $("#autocomplete").val();
+	location.href="findrestaurants/"+addressVal +"/";
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"
+        async defer></script>
