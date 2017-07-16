@@ -666,9 +666,10 @@ function handleAddToCart(){
                      $('[data-popup-close]').click();
 						constructProductContainer(productDetails,sectionName,itemName);
 						if(document.getElementById("subTotalWrapper")){
-							document.getElementById('ProductSubTotal').textContent = result.subTotal;
-							document.getElementById('ProductTotal').textContent = result.totalAmt;
-							document.getElementById('totalValue').textContent = result.totalAmt;
+							console.log("it comes indise");
+							document.getElementById('ProductSubTotal').textContent = "$"+result.subTotal;
+							document.getElementById('ProductTotal').textContent ="$"+ result.totalAmt;
+							document.getElementById('totalValue').textContent = "$"+result.totalAmt;
 						}else{
 							createSubTotalWrapper(result.subTotal,result.deliveryFee,result.taxAmt, result.totalAmt);
 							createCartFooter(result.totalAmt);

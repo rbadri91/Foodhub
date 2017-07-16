@@ -114,10 +114,10 @@ function createSubTotalWrapper(subTotal,deliveryFee,taxAmt,total){
 	subTotalWrapper.id ="subTotalWrapper";
 	subTotalWrapper.className ="subTotalContainer";
 	document.getElementById("cartPanel").appendChild(subTotalWrapper);
-	constructSubTotalRow(subTotalWrapper,"","Items Subtotal:",subTotal);
+	constructSubTotalRow(subTotalWrapper,"ProductSubTotal","Items Subtotal:",subTotal);
 	constructSubTotalRow(subTotalWrapper,"","Delivery Fee:",deliveryFee);
 	constructSubTotalRow(subTotalWrapper,"","Sales Tax:",taxAmt);
-	constructSubTotalRow(subTotalWrapper,"","Total:",total);
+	constructSubTotalRow(subTotalWrapper,"ProductTotal","Total:",total);
 }
 
 function constructSubTotalRow(subTotalWrapper,divId,labelName,value){
