@@ -171,10 +171,16 @@ function handleOrderType(el){
 		activeOrderType ="Delivery";
 		$("#PickUp").removeClass("f-btn-active");
 		$("#delivery").addClass("f-btn-active");
+		if(document.getElementById('deliverInst')){
+			document.getElementById('deliverInst').style.display="block";
+		}
 	}else{
 		activeOrderType ="Pick Up";
 		$("#PickUp").addClass("f-btn-active");
 		$("#delivery").removeClass("f-btn-active");
+		if(document.getElementById('deliverInst')){
+			document.getElementById('deliverInst').style.display="none";
+		}
 	}
 }
 function handleCartClick(){

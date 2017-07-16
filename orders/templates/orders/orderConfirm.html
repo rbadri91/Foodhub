@@ -203,7 +203,7 @@
     </div>
     </div>
 
-      <div class="s-row">
+      <div class="s-row" id ="deliverInst">
         <div class="col-sm-12">
             <div class="s-row">
               <span class="sectionHeader">Delivery Instructions</span>
@@ -259,6 +259,14 @@ $.ajaxSetup({
 </script>
 
 <script type="text/javascript">
+
+$(function(){
+  var order_type = "{{order_type}}"
+  console.log("order_type here:",order_type);
+  if(order_type === "Pick Up"){
+    document.getElementById('deliverInst').style.display="none";
+  }
+});
 
 function handleSaveAddress(){
   var address="{{dest_address}}";
