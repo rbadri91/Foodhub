@@ -828,8 +828,11 @@ def restaurant_description(request, restaurant_name):
 	print("totalValue here:",totalValue)
 	request.session["totalAmt"] = totalValue
 
-	request.session["deliveryPrice"] = restaurantDesc['deliveryPrice']
-
+	if 'deliveryPrice' in restaurantDesc:
+		request.session["deliveryPrice"] = restaurantDesc['deliveryPrice']
+	else:
+		request.session["deliveryPrice"] =0.0
+		
 	productDetails =[]
 	if len(productsChosen) !=0:
 		productDetails = zip(productsChosen, sectionList, itemNameList)	
@@ -848,7 +851,7 @@ def restaurant_description(request, restaurant_name):
 		"restaurantName":restaurantDesc["name"],
 		'subTotal':totalPrice,
 		'salesTax':restaurantDesc["taxRate"],
-		'deliveryPrice':restaurantDesc['deliveryPrice'],
+		'deliveryPrice':request.session["deliveryPrice"],
 		'totalAmt': request.session["totalAmt"],
 		"isMenuPage":True,
 		"isLoggedIn":isLoggedIn,
