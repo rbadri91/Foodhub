@@ -173,6 +173,7 @@ def removeFromCart(request):
 def updateOrderAdddress(request):
 	order_type = request.POST["orderType"];
 	address =  request.POST["newAddress"];
+	print("order_type here:",order_type)
 	request.session["order_type"] = order_type
 	request.session["order_address"] = address
 	return HttpResponse("Success")
