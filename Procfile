@@ -1,1 +1,1 @@
-web: gunicorn foodiehub.wsgi --log-file -
+web: gunicorn foodhub.wsgi --log-file -
