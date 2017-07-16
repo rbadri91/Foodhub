@@ -656,6 +656,12 @@ def profile(request):
 def account(request):
 	return render(request, 'Foodhubinit/account.html')
 
+def address(request):
+	addresses = request.user.profile.addresses
+	return render(request, 'Foodhubinit/addresses.html',{
+		'addresses':addresses
+		})	
+
 
 def getRestaurants(type,place):
 	URL = "https://api.eatstreet.com/publicapi/v1/restaurant/search";
@@ -816,6 +822,7 @@ def restaurant_description(request, restaurant_name):
 	totalPrice = round(totalPrice,3)
 	request.session["subTotal"] = totalPrice
 	request.session["salestax"] = restaurantDesc['taxRate']
+	print('taxRate here:',restaurantDesc['taxRate'])
 	print("tax in cents:",((totalPrice*100)+ (restaurantDesc['taxRate'] * 100)))
 	totalValue = round(((totalPrice*100) + (restaurantDesc['taxRate'] * 100))/100,3)
 	print("totalValue here:",totalValue)

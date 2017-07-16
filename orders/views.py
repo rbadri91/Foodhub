@@ -1,9 +1,15 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+from decimal import Decimal
 
 import json
 import pprint
 import urllib
+import stripe
+
+from .actions import sources,charges,customers
 
 # Create your views here.
 
@@ -13,6 +19,7 @@ def confirmOrder(request):
 	firstName = request.user.first_name;
 	lastName = request.user.last_name;
 	email= request.user.email;
+	addresses = request.user.profile.addresses
 	print("firstName here:",firstName)
 	print("lastName here:",lastName)
 	productsChosen = list();
@@ -81,6 +88,14 @@ def confirmOrder(request):
 
 				
 	request.session["isMenuPage"] =True
+	print('address here:',address)
+
+	issavedAddress = False
+
+	if address in addresses:
+		issavedAddress = True
+
+	print("issavedAddress here:",issavedAddress)	
 
 	return render(request,'orders/orderConfirm.html',
 		{
@@ -101,6 +116,8 @@ def confirmOrder(request):
 			"city_name":city_name,
 			"state_name":state_name,
 			"zip_code":zip_code,
+			"issavedAddress":issavedAddress,
+			"isOrderConfirmPage":True
 		})
 
 def getSplitAddress(address):
@@ -115,3 +132,50 @@ def getSplitAddress(address):
 	structure = json.loads(response)
 	pprint.pprint(structure)
 	return structure["city_name"],structure["state_abbreviation"], structure["zipcode"]
+
+@login_required
+def saveAddress(request):
+	address = request.POST['address']
+	print("address here:",address)
+	if not address in request.user.profile.addresses:
+		request.user.profile.addresses.append(address)
+		print("in if check")
+	else:
+		request.user.profile.addresses.remove(address)
+		print("in else check")	
+	
+	request.user.profile.save()
+	return HttpResponse("success")
+
+@login_required
+def orderPayment(request):
+	firstName = request.user.first_name;
+	lastName = request.user.last_name;
+	return render(request,'orders/orderPayment.html',{
+		"firstName":firstName,
+		"lastName":lastName,
+	})
+
+@login_required
+def chargeCard(request):
+	stripe.api_key = "sk_test_zxRWFSiVXfdaMAEbtDFFrSTw"
+	token = request.POST.get("stripeToken")
+	print("it comes inside")
+	print("token here:",token)
+	# customer = customers.get_customer_for_user(request.user)
+	# print("customer here:",customer)
+	# sources.create_card(customer,token)
+
+	customer = stripe.Customer.create(
+	  email=request.user.email,
+	  source=token,
+	)
+
+	charges.create(amount=Decimal("1500"), description="Example charge",customer=customer, send_receipt=False)
+	
+	restaurants = request.session["restaurants"]
+	print("restaurants here:",restaurants)
+
+	return render(request,'orders/paymentConfirm.html');
+
+

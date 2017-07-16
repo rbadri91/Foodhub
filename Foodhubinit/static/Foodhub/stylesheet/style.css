@@ -1005,7 +1005,7 @@ h6{
 *, *::after, *::before {
   box-sizing: border-box; }
 
-.profilePageContainer{
+.profilePageContainer,.addressContainer{
   display: block;
   padding: 0 30px 30px;
   min-height: 100vh;
@@ -1015,13 +1015,13 @@ h6{
   
 }
 @media (min-width: 768px){
-  .profilePageContainer{
+  .profilePageContainer, .addressContainer{
     width: calc(100vw - 130px);
     right: 40px;
   }  
 }
 @media (max-width: 768px){
-  .profilePageContainer{
+  .profilePageContainer,.addressContainer{
     width: 100%;
   }  
 }
@@ -1044,7 +1044,7 @@ h6{
     background-color: #FFF;
     cursor: pointer;
 }
-.profileBody{
+.profileBody,.addressBody{
   color: grey;
 }
 .editTitle{
@@ -1099,6 +1099,10 @@ h6{
 }
 .editWrapper{
   text-decoration: none;
+  color: grey;
+}
+.addressHeader{
+  background: #fff;
   color: grey;
 }
 .f-container{

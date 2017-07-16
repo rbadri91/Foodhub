@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
      'localflavor',
 ]
 
@@ -148,3 +149,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+SEND_EMAIL_RECEIPTS = True
+INVOICE_FROM_EMAIL ="billing@foodhub.com"
+DEFAULT_HTTP_PROTOCOL="http"
+STRIPE_DEFAULT_PLAN = True

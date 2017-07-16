@@ -174,8 +174,12 @@
 		<div id ="cartFooterContainer" class="cartFooter">
 			<div class="proceedButtonContainer">
 			<div class="proceedButtonWrapper">
-				<a class="btn proceedButton f-btn f-btn-full btn-info" href='{% url "orders:confirmOrder" %}'>
-					<span> Proceed To Checkout</span>
+				<a class="btn proceedButton f-btn f-btn-full btn-info" {% if isOrderConfirmPage %} href='{% url "orders:orderPayment" %}' {% else %} href='{% url "orders:confirmOrder" %}'{% endif%}>
+				{% if isOrderConfirmPage %}
+				<span> Proceed To Payment</span>
+				{%else%}
+				<span> Proceed To Checkout</span>
+				{% endif%}
 					<span id ="totalValue">$ {{totalAmt}}</span>
 				</a>
 			</div>

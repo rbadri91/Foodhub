@@ -29,7 +29,7 @@
     </div>
     <div id="navbar" class="collapse navbar-collapse">
       <ul class="nav navbar-nav navbar-right" style="padding-right: 10%">
-        	<li><a id="profile" style ="color: white;font-family: Arial black;font-size:250%;overflow: hidden;" href="{% url 'profile' %}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span style="font-size: 40%;vertical-align: middle; height: 100%;top: 0;">{{fullName}}</span></a>
+        	<li><a id="profile" style ="color: white;font-family: Arial black;font-size:250%;overflow: hidden;" href="{% url 'account' %}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span style="font-size: 40%;vertical-align: middle; height: 100%;top: 0;">{{fullName}}</span></a>
         	</li>
         <li style="padding-top: 10px;cursor: pointer;" class="pull-right">
         <div style="font-size:300%;color:white;height:100%;padding:0 10px"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
@@ -100,7 +100,7 @@
     <div class="s-row">
       <div class="col-sm-4">
         <div class="input-block">
-          <input class="orderInput" name ="address" id ="address" type="text" value = {{dest_address}}>
+          <input class="orderInput" name ="address" id ="address" type="text" value = {{dest_address}} >
           <label for ="address" class="inputLabel">Address</label>
         </div>
       </div>
@@ -222,7 +222,7 @@
   </div>
   <div class="s-row saveAddressWrapper">
     <div class="checkBoxinnerWrapper">
-      <input name="saveAddress" class="checkboxclass" type="checkbox"/>
+      <input name="saveAddress" class="checkboxclass" type="checkbox" onchange="handleSaveAddress()" {% if isMenuPage %} checked {% endif %}/>
       <label name="saveAddress" class="checkboxholder"></label>
       <label for ="saveAddress" class="chk-desc" >Save Address </label>
     </div>
@@ -241,6 +241,37 @@
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/plain" src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js></script>
-<script>
+{% csrf_token %}
+<script type="text/javascript">
+// using jQuery
+var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+</script>
+
+<script type="text/javascript">
+
+function handleSaveAddress(){
+  var address="{{dest_address}}";
+  $.ajax({
+      type:"POST",
+      url:'{% url "orders:saveAddress" %}',
+      data: {
+        address : address
+      },
+      success:function(){
+        alert("address saved")
+      }
+  });
+}
 </script>
 </body>

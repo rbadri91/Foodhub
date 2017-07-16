@@ -63,20 +63,30 @@ def addToCart(request):
 	taxAmt =0.0;
 	deliveryMin =0.0;
 
-	
+	if 'salesTax' in request.session:
+		taxAmt = request.session["salesTax"]
+
+	print('taxAmt here 1:',taxAmt)
 	if 'totalAmt' in request.session:
 		totalAmount = request.session["totalAmt"]
 
 	if totalAmount == 0:
-		totalAmount += subPrice + request.session["salesTax"]
+		totalAmount += subPrice + taxAmt
+		print('new total amount here:',totalAmount)
+		print('subPrice here:',subPrice)
 	else:
-		totalAmount += subPrice;
+		print('totalAmount here 2:',totalAmount)
+		print('subPrice here 2:',subPrice)
+		totalAmount = totalAmount + subPrice;
+		print('new total amount here 2:',totalAmount)
 		
 	request.session["totalAmt"] = round(totalAmount,3)
 	request.session["subTotal"] = totalPrice
 
-	if 'salesTax' in request.session:
-		taxAmt = request.session["salesTax"]
+	
+
+	print('tax amount here:',taxAmt)
+	print('total amount here:',request.session["totalAmt"])	
 
 	print("sectionNames session:",request.session["sectionNames"])
 	print("itemNameList session:",request.session["itemNameList"])
@@ -120,7 +130,10 @@ def removeFromCart(request):
 			request.session["subTotal"] = totalPrice
 			totalAmount -= (subPrice * productDeleted['qty']);
 			totalAmount = round(totalAmount,3)
-			request.session["totalAmt"] = totalAmount
+			if totalPrice !=0:
+				request.session["totalAmt"] = totalAmount
+			else:
+				request.session["totalAmt"] =0	
 
 			del  productsChosen[idx]
 

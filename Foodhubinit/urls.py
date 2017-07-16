@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^profile/nameedit/$', views.edit_name, name='edit_name'),
     url(r'^profile/emailedit/$', views.edit_email, name='edit_email'),
     url(r'^profile/password_change/$', views.edit_password, name='password_change'),
+    url(r'^address/$', views.address, name='address'),
 ]
