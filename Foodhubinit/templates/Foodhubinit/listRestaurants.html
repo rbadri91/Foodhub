@@ -114,7 +114,7 @@ function calcDistane(lat1, lon1,address_coord) {
 	<br>
 	<div class="delivertSlider">
 		<h4>Delivery Time</h4>
-		<input id="ex13" type="text" data-slider-ticks="[30, 45, 60, 75]" data-slider-ticks-snap-bounds="30" data-slider-ticks-labels='["30", "45", "60", "Any"]'/>
+		<input id="ex13" type="text" data-slider-ticks="[30, 45, 60, 75]" data-slider-ticks-snap-bounds="30" data-slider-ticks-labels='["30", "45", "60", "Any"]' onchange="handleDeliveryTimeChange(this)" />
 	</div>
 	<br>
 	<div>
@@ -349,6 +349,11 @@ $("#ex13").bootstrapSlider({
             $("#ex13").val(valMap[ui.value]);                
     } 
 })
+
+function handleDeliveryTimeChange(el){
+	console.log("el here:",el);
+	console.log("value here:",el.value);
+}
 </script>
 
 <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyA_T0L3QXJI0RusVVZ-44z7IWk1i4XKUOk&libraries=places"
