@@ -684,6 +684,7 @@ def find_restaurants(request,address):
 
 	featuresList =list()
 	cuisinesList =list()
+	maxDeliveryTime = 0
 
 	if "featuresList" in request.session:
 		featuresList = request.session["featuresList"]
@@ -696,6 +697,11 @@ def find_restaurants(request,address):
 
 	if request.GET.get('sortBy'):
 		sortBy = request.GET.get('sortBy')	
+
+	if request.GET.get('maxDelTime'):
+		maxDeliveryTime = request.GET.get('maxDelTime')
+
+	print("maxDeliveryTime here:",maxDeliveryTime)
 
 	if 	request.GET.get('featureType'):
 		featuresList.append(request.GET.get('featureType'))
@@ -719,16 +725,12 @@ def find_restaurants(request,address):
 
 	filteredRestaurants =list()
 
-	# sampleFilteres = [d for d in restaurants if 'Chinese Food' in d['foodTypes'] ]
-
-	# print("sampleFilteres here:",sampleFilteres)
-
 	if cuisinesList:
-		filteredRestaurants = [d for d in restaurants if not set([x.lower() for x in  d['foodTypes']]).isdisjoint(cuisinesList)]
-		print("filteredRestaurants here:",len(filteredRestaurants))
-
-	print("restaurants here:",restaurants[0])
-	print("sortBy here:",sortBy)
+		if maxDeliveryTime:
+			filteredRestaurants = [d for d in restaurants if not set([x.lower() for x in  d['foodTypes']]).isdisjoint(cuisinesList) and d['maxWaitTime'] <= int(maxDeliveryTime)]
+			print("filteredRestaurants here:",len(filteredRestaurants))
+		else:
+			filteredRestaurants = [d for d in restaurants if not set([x.lower() for x in  d['foodTypes']]).isdisjoint(cuisinesList)]
 
 	cuisines = getCuisines(restaurants);
 
@@ -754,7 +756,6 @@ def find_restaurants(request,address):
 	request.session["isMenuPage"] =False
 
 
-
 	return render(request, 'Foodhubinit/listRestaurants.html',
 		{"restaurants":displayRestaurants,
 		"ratings":ratings,
@@ -764,6 +765,7 @@ def find_restaurants(request,address):
 		"address":json.dumps(address),
 		"orderTypeValue":json.dumps(orderType),
 		"address_lat_long_resp":address_lat_long_resp,
+		"maxDeliveryTime":maxDeliveryTime,
 		"sortBy":json.dumps(sortBy)})	
 
 def getRestaurantDetails(restaurants,pageNum):
