@@ -249,13 +249,14 @@ function handleSearchLocation(){
 function handleCuisineSelect(el){
 	var labelText = $("label[for='" + el.id + "']").text();
 	var hypenIndex = labelText.indexOf("-");
+	console.log("checked vaue here :",el.checked );
 	var cuisineType = labelText.substring(0,hypenIndex-1).trim().toLowerCase();
-	console.log("cuisineType:",cuisineType);
+	var toAdd = el.checked;
 	var locationVal = document.getElementById("autocomplete").value;
 	console.log("cuisineType encoded:",encodeURIComponent(cuisineType));
 	if(locationVal!=""){
 		var url = "{% url 'findrestaurants' address=123 %}";
-		location.href=url.replace('123', locationVal)+"?cuisineType="+encodeURIComponent(cuisineType);
+		location.href=url.replace('123', locationVal)+"?cuisineType="+encodeURIComponent(cuisineType) +"&addCuisine="+toAdd;
 	}
 }
 

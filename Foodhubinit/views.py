@@ -680,6 +680,8 @@ def find_restaurants(request,address):
 	ratings =dict();
 	sortBy = "default";
 
+	addCuisine = False
+
 	featuresList =list()
 	cuisinesList =list()
 
@@ -699,9 +701,17 @@ def find_restaurants(request,address):
 		featuresList.append(request.GET.get('featureType'))
 		request.session["featuresList"] = featuresList
 
-	if 	request.GET.get('cuisineType'):
-		cuisinesList.append(request.GET.get('cuisineType'))
-		request.session["cuisinesList"] = cuisinesList
+	
+
+	if 	request.GET.get('addCuisine'):
+		if json.loads(request.GET.get('addCuisine', 'false')) == True:
+			if 	request.GET.get('cuisineType'):
+				cuisinesList.append(request.GET.get('cuisineType'))
+		else:
+			if 	request.GET.get('cuisineType'):
+				cuisinesList.remove(request.GET.get('cuisineType'))
+
+	request.session["cuisinesList"] = cuisinesList
 
 	print("cuisines list:",cuisinesList)
 
@@ -722,11 +732,14 @@ def find_restaurants(request,address):
 
 	cuisines = getCuisines(restaurants);
 
-	if len(filteredRestaurants) !=0:
+	if filteredRestaurants:
+		print("it comes inside")
 		restaurants =filteredRestaurants
 
 	if sortBy!="default":
 		restaurants.sort(key = lambda x: x[sortBy])
+
+	print("restaurants here: again",restaurants[0])	
 
 	request.session["restaurants"] = restaurants;
 	request.session["dest_address"] = address;
@@ -736,7 +749,7 @@ def find_restaurants(request,address):
 	address_lat_long_resp = resp_json_payload['results'][0]['geometry']['location']
 	
 	request.session["order_type"] = orderType;
-	displayRestaurants,page_range=getRestaurantDetails(filteredRestaurants,pageNum)
+	displayRestaurants,page_range=getRestaurantDetails(restaurants,pageNum)
 	
 	request.session["isMenuPage"] =False
 
