@@ -154,9 +154,10 @@ function createCartFooter(totalValue){
 	var proceedButtonWrapper = document.createElement("div");
 	proceedButtonWrapper.className = "proceedButtonWrapper";
 	proceedButtonContainer.appendChild(proceedButtonWrapper);
-	var proceedButton = document.createElement("button");
+	var proceedButton = document.createElement("a");
 	proceedButton.className = "btn proceedButton f-btn f-btn-full btn-info";
 	proceedButtonWrapper.appendChild(proceedButton);
+	proceedButton.href =confirmOrderURL;
 	var proceedButtonLabel = document.createElement("span");
 	proceedButtonLabel.textContent ="Proceed To Checkout";
 	proceedButton.appendChild(proceedButtonLabel);

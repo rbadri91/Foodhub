@@ -10,7 +10,6 @@
 <link rel="stylesheet" type="text/css" href="{% static 'shoppingCart/stylesheet/style.css' %}" />
 
 </head>
-<script src="{% static 'shoppingCart/js/handleCartView.js' %}"></script>
 <body>
 <div class="popup" data-popup2="popup-2" style ="z-index: 860">
     <div class="popup-inner">
@@ -196,7 +195,10 @@
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script type="text/javascript">
 	var activeOrderType ="{{order_type|safe}}";
+	var confirmOrderURL  = '{% url "orders:confirmOrder" %}'
 </script>
+<script src="{% static 'shoppingCart/js/handleCartView.js' %}"></script>
+
 <script>
 $(function(){
 	if(activeOrderType =="Delivery"){
