@@ -222,7 +222,7 @@
   </div>
   <div class="s-row saveAddressWrapper" id="save_addressBox">
     <div class="checkBoxinnerWrapper">
-      <input name="saveAddress" class="checkboxclass" type="checkbox" onchange="handleSaveAddress()" {% if isMenuPage %} checked {% endif %}/>
+      <input name="saveAddress" class="checkboxclass" type="checkbox" onchange="handleSaveAddress()" {% if issavedAddress %} checked {% endif %}/>
       <label name="saveAddress" class="checkboxholder"></label>
       <label for ="saveAddress" class="chk-desc" >Save Address </label>
     </div>

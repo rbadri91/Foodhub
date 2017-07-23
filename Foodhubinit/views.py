@@ -679,26 +679,64 @@ def find_restaurants(request,address):
 	orderType = "delivery"
 	ratings =dict();
 	sortBy = "default";
+
+	featuresList =list()
+	cuisinesList =list()
+
+	if "featuresList" in request.session:
+		featuresList = request.session["featuresList"]
+
+	if "cuisinesList" in request.session:
+		cuisinesList = request.session["cuisinesList"]
+
 	if request.GET.get('orderType'):
 		orderType = request.GET.get('orderType')
 
 	if request.GET.get('sortBy'):
 		sortBy = request.GET.get('sortBy')	
 
+	if 	request.GET.get('featureType'):
+		featuresList.append(request.GET.get('featureType'))
+		request.session["featuresList"] = featuresList
+
+	if 	request.GET.get('cuisineType'):
+		cuisinesList.append(request.GET.get('cuisineType'))
+		request.session["cuisinesList"] = cuisinesList
+
+	print("cuisines list:",cuisinesList)
+
 	restaurants = getRestaurants(orderType,address)
 
+	filteredRestaurants =list()
+
+	# sampleFilteres = [d for d in restaurants if 'Chinese Food' in d['foodTypes'] ]
+
+	# print("sampleFilteres here:",sampleFilteres)
+
+	if cuisinesList:
+		filteredRestaurants = [d for d in restaurants if not set([x.lower() for x in  d['foodTypes']]).isdisjoint(cuisinesList)]
+		print("filteredRestaurants here:",len(filteredRestaurants))
+
+	print("restaurants here:",restaurants[0])
+	print("sortBy here:",sortBy)
+
+	cuisines = getCuisines(restaurants);
+
+	if len(filteredRestaurants) !=0:
+		restaurants =filteredRestaurants
 
 	if sortBy!="default":
 		restaurants.sort(key = lambda x: x[sortBy])
 
 	request.session["restaurants"] = restaurants;
 	request.session["dest_address"] = address;
+
 	address_lat_long_resp = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+address)
 	resp_json_payload = address_lat_long_resp.json()
 	address_lat_long_resp = resp_json_payload['results'][0]['geometry']['location']
-	cuisines = getCuisines(restaurants);
+	
 	request.session["order_type"] = orderType;
-	displayRestaurants,page_range=getRestaurantDetails(restaurants,pageNum)
+	displayRestaurants,page_range=getRestaurantDetails(filteredRestaurants,pageNum)
 	
 	request.session["isMenuPage"] =False
 
@@ -709,6 +747,7 @@ def find_restaurants(request,address):
 		"ratings":ratings,
 		"page_range":page_range,
 		"cuisines":cuisines,
+		"cuisinesList":cuisinesList,
 		"address":json.dumps(address),
 		"orderTypeValue":json.dumps(orderType),
 		"address_lat_long_resp":address_lat_long_resp,

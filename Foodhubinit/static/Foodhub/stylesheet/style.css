@@ -522,7 +522,7 @@ h6{
     left:50%;
     -webkit-transform:translate(-50%, -50%);
     transform:translate(-50%, -50%);
-    box-shadow:0px 2px 6px rgba(0,0,0,1);
+    box-shadow:0px 2px 6px rgba(0,0,0,1); 
     border-radius:3px;
     background:#fff;
 }
@@ -608,6 +608,7 @@ h6{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: capitalize;
 }
 .EditButtonGroup{
   bottom: 0;
@@ -1110,4 +1111,7 @@ h6{
     margin-right: auto;
     padding-left: 0;
     padding-right: 0;
+}
+.setOverflow{
+  overflow: visible;
 }

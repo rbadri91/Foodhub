@@ -106,8 +106,8 @@ function calcDistane(lat1, lon1,address_coord) {
 		<select class="form-control" data-style="btn-primary" id="sortOrder" onchange="handleSorting(this)">
 			<option value="default">Alphabetical</option>
 			<option value="Rating">Rating</option>
-			<option value="Distance">Distance</option>
-			<option value="deliveryMin"> Delivery Minutes</option>
+			<option value="minWaitTime">WaitingTime</option>
+			<option value="deliveryMin"> Minimum Delivery Price</option>
 			<option value="deliveryPrice"> Delivery Fee</option>
 		</select>
 	</div>
@@ -121,20 +121,25 @@ function calcDistane(lat1, lon1,address_coord) {
 		<h4>Cuisines</h4>
 		{% for key, value in cuisines.items %}
 			<div class="checkBoxinnerWrapper">
-				<input id={{forloop.counter}} class="checkboxclass" type="checkbox" name ={{key}}/>
-				<label for ={{key}} class="checkboxholder"></label>
-				<label for ={{key}} class="checkboxDescirption" >{{key}}-{{value}} </label>
+				<input id={{forloop.counter}} class="checkboxclass" type="checkbox" name ={{key}} onchange ="handleCuisineSelect(this)" {% if key in cuisinesList %} checked {% endif%}/>
+				<label for ={{forloop.counter}} class="checkboxholder"></label>
+				<label for ={{forloop.counter}} class="checkboxDescirption" >{{key}} -  {{value}} </label>
 			</div>
 		{% endfor %}
 	</div>
 	<br>
 	<div>
 		<h4>Features</h4>
-		<div>
-				<label><input type="checkbox"/>Free Delivery </label>
+		<div class="checkBoxinnerWrapper">
+				<input class="checkboxclass" name ="freeDelivery" type="checkbox" id ="freeDelivery" onchange="handlefeatureSelect(this)"/>
+				<label for ="freeDelivery" class="checkboxholder"></label>
+				<label for ="freeDelivery" class="checkboxDescirption setOverflow" >Free Delivery</label>
+				
 		</div>
-		<div>
-				<label><input  type="checkbox"/>Open Now </label>
+		<div class="checkBoxinnerWrapper">
+			<input class="checkboxclass" name ="openNow" id ="openNow" type="checkbox" onchange="handlefeatureSelect(this)"/>
+			<label for ="openNow" class="checkboxholder"></label>
+			<label for ="openNow" class="checkboxDescirption setOverflow" > Open Now</label>
 		</div>
 	</div>
 </div>
@@ -239,6 +244,29 @@ function handleSearchLocation(){
 		location.href="../"+addressVal +"/";
 
 	}
+}
+
+function handleCuisineSelect(el){
+	var labelText = $("label[for='" + el.id + "']").text();
+	var hypenIndex = labelText.indexOf("-");
+	var cuisineType = labelText.substring(0,hypenIndex-1).trim().toLowerCase();
+	console.log("cuisineType:",cuisineType);
+	var locationVal = document.getElementById("autocomplete").value;
+	console.log("cuisineType encoded:",encodeURIComponent(cuisineType));
+	if(locationVal!=""){
+		var url = "{% url 'findrestaurants' address=123 %}";
+		location.href=url.replace('123', locationVal)+"?cuisineType="+encodeURIComponent(cuisineType);
+	}
+}
+
+function handlefeatureSelect(el){
+	var featureType = el.id;
+	var locationVal = document.getElementById("autocomplete").value;
+	console.log("locationVal here:",locationVal)
+	if(locationVal!=""){
+		var url = "{% url 'findrestaurants' address=123 %}";
+		location.href=url.replace('123', locationVal)+"?featureType="+featureType
+	}	
 }
 
 function handleOrderTypeChange(el){
