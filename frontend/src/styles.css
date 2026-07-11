@@ -1,0 +1,166 @@
+:root {
+  --ink: #14181a;
+  --ink-soft: #4a5257;
+  --paper: #f7f7f4;
+  --card: #ffffff;
+  --basil: #1f6b45;
+  --basil-dark: #175134;
+  --chili: #d33a2c;
+  --line: #e3e3dd;
+  --radius: 10px;
+  --display: "Bricolage Grotesque", sans-serif;
+  --body: "Inter", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--body); cursor: pointer; }
+:focus-visible { outline: 2px solid var(--basil); outline-offset: 2px; }
+
+.shell { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+/* ---- Nav ---- */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 0; border-bottom: 1px solid var(--line);
+}
+.brand {
+  font-family: var(--display); font-weight: 800; font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+.brand em { font-style: normal; color: var(--basil); }
+.nav-links { display: flex; gap: 20px; align-items: center; font-weight: 500; font-size: 0.95rem; }
+.nav-links a:hover { color: var(--basil); }
+
+/* ---- Hero ---- */
+.hero { padding: 56px 0 32px; }
+.hero h1 {
+  font-family: var(--display); font-weight: 800; letter-spacing: -0.03em;
+  font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0 0 10px; max-width: 16ch;
+  line-height: 1.05;
+}
+.hero p { color: var(--ink-soft); margin: 0 0 24px; max-width: 52ch; }
+.search-row { display: flex; gap: 10px; max-width: 520px; }
+.search-row input {
+  flex: 1; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--radius);
+  font-size: 1rem; font-family: var(--body); background: var(--card);
+}
+
+/* ---- Cuisine chips ---- */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0 8px; }
+.chip {
+  padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--card); font-size: 0.85rem; font-weight: 500;
+}
+.chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ---- Restaurant grid ---- */
+.grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px; padding: 20px 0 60px;
+}
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px; transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(20, 24, 26, 0.07); }
+.card h3 { font-family: var(--display); font-weight: 600; margin: 0 0 4px; font-size: 1.15rem; }
+.card .meta { color: var(--ink-soft); font-size: 0.85rem; display: flex; gap: 8px; align-items: center; }
+.card .cuisine-tag {
+  display: inline-block; margin-top: 12px; font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--basil);
+}
+.rating { font-family: var(--mono); font-size: 0.82rem; }
+
+/* ---- Restaurant page ---- */
+.restaurant-layout { display: grid; grid-template-columns: 1fr 340px; gap: 32px; padding: 32px 0 80px; }
+.menu-section h2 {
+  font-family: var(--display); font-weight: 600; font-size: 1.3rem;
+  border-bottom: 2px solid var(--ink); padding-bottom: 6px; margin: 28px 0 4px;
+}
+.menu-item {
+  display: flex; justify-content: space-between; gap: 16px; align-items: baseline;
+  padding: 14px 0; border-bottom: 1px dashed var(--line);
+}
+.menu-item .desc { color: var(--ink-soft); font-size: 0.87rem; margin-top: 2px; }
+.price { font-family: var(--mono); font-weight: 500; white-space: nowrap; }
+.add-btn {
+  border: 1px solid var(--basil); color: var(--basil); background: none;
+  border-radius: 6px; padding: 5px 12px; font-weight: 600; font-size: 0.85rem;
+}
+.add-btn:hover { background: var(--basil); color: #fff; }
+
+/* ---- The Ticket (signature element) ----
+   Cart and order summaries render as a kitchen order ticket:
+   monospace, perforated edge, ALL-CAPS header. */
+.ticket {
+  background: #fff; font-family: var(--mono); font-size: 0.85rem;
+  padding: 20px 18px 26px; position: sticky; top: 24px;
+  box-shadow: 0 3px 14px rgba(20, 24, 26, 0.09);
+  --notch: radial-gradient(circle at 8px 8px, transparent 6px, #fff 6.5px);
+}
+.ticket::after {
+  content: ""; display: block; height: 12px; margin: 18px -18px -26px;
+  background: linear-gradient(-45deg, transparent 8px, #fff 0) 0 50% / 16px 16px repeat-x,
+              linear-gradient(45deg, transparent 8px, #fff 0) 0 50% / 16px 16px repeat-x;
+  filter: drop-shadow(0 2px 2px rgba(20, 24, 26, 0.08));
+  transform: translateY(14px);
+}
+.ticket h2 {
+  font-family: var(--mono); font-size: 0.95rem; text-transform: uppercase;
+  letter-spacing: 0.14em; text-align: center; margin: 0 0 4px;
+}
+.ticket .sub { text-align: center; color: var(--ink-soft); font-size: 0.75rem; margin-bottom: 14px; }
+.ticket hr { border: none; border-top: 1px dashed var(--line); margin: 12px 0; }
+.ticket-row { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; }
+.ticket-row.total { font-weight: 600; font-size: 0.95rem; }
+.qty-controls { display: inline-flex; gap: 6px; align-items: center; }
+.qty-controls button {
+  font-family: var(--mono); border: 1px solid var(--line); background: none;
+  width: 22px; height: 22px; border-radius: 4px; line-height: 1;
+}
+.checkout-btn {
+  width: 100%; margin-top: 14px; padding: 12px; border: none; border-radius: 6px;
+  background: var(--basil); color: #fff; font-weight: 600; font-size: 0.95rem;
+}
+.checkout-btn:hover { background: var(--basil-dark); }
+.checkout-btn:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+
+/* ---- Forms ---- */
+.form-card {
+  max-width: 420px; margin: 48px auto; background: var(--card);
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 28px;
+}
+.form-card h1 { font-family: var(--display); font-weight: 700; margin: 0 0 18px; font-size: 1.6rem; }
+.form-card label { display: block; font-size: 0.85rem; font-weight: 600; margin: 14px 0 5px; }
+.form-card input, .form-card select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px;
+  font-size: 0.95rem; font-family: var(--body);
+}
+.error { color: var(--chili); font-size: 0.85rem; margin-top: 10px; }
+.muted { color: var(--ink-soft); font-size: 0.87rem; }
+
+/* ---- Order status ---- */
+.status-badge {
+  font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px; letter-spacing: 0.05em;
+}
+.status-pending_payment { background: #fdf1d6; color: #8a6410; }
+.status-paid, .status-confirmed { background: #e3f2e9; color: var(--basil-dark); }
+.status-cancelled { background: #fbe4e1; color: var(--chili); }
+
+@media (max-width: 860px) {
+  .restaurant-layout { grid-template-columns: 1fr; }
+  .ticket { position: static; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+}
