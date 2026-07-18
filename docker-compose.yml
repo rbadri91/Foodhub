@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: foodhub
+      POSTGRES_PASSWORD: foodhub
+      POSTGRES_DB: foodhub
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U foodhub"]
+      interval: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgres://foodhub:foodhub@db:5432/foodhub
+      DEBUG: "True"
+      SECRET_KEY: docker-dev-only-key
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py seed_demo &&
+             gunicorn foodhub.wsgi --bind 0.0.0.0:8000"
+
+volumes:
+  pgdata:

@@ -1,63 +1,110 @@
-# Foodhub
+# FoodHub
 
-This is a web application built entirly using Python, Django web framework, and Postgres to help people locate a good restaurant nearby and order food to either get it deliverd or picjked up. I am using EatStreet API for getting information about the restaurant s which include the restaurant timings and menu details.
+A food ordering platform: browse restaurants, build a cart, check out with delivery or pickup, pay with Stripe. Originally built in 2017 on Django 1.11 + the EatStreet API; rebuilt in 2026 as a Django 5.2 REST API with a React frontend.
 
-This project consists of 3 internal applications
+**Stack:** Django 5.2 (LTS) · Django REST Framework · SimpleJWT · PostgreSQL · Stripe PaymentIntents · React 18 + Vite · OpenStreetMap (Overpass) for restaurant data
 
-Foodhubinit: An application that holds the user model and contains templates for landing pages and for listing restaurants
+## Quick start
 
-shoppingCart: As the name suggests it contains everything related to shopping cart such as adding , reoving and updating products.
+```bash
+# Backend (SQLite, zero config)
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+python manage.py migrate
+python manage.py seed_demo          # offline demo data
+python manage.py runserver
 
-orders: It contains teamplates for showig user their final order datails and viewing formas relevant to payment. It contains procedures to store information about order details for which a separate table in PostgreSQL has been created.
-
-Database Tables:
-Profile: 
+# Frontend (separate terminal)
+cd frontend
+npm install
+npm run dev                          # http://localhost:5173, proxies /api to :8000
 ```
-user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
-    email_confirmed = models.BooleanField(default=False)
-    phone_no = USPhoneNumberField(required=False, label="Phone")
-    addresses = ArrayField(models.CharField(max_length=200, blank=True),default=list, null=True)
+
+Or with Docker (Postgres included): `docker compose up`
+
+To pull real restaurants for your city from OpenStreetMap instead of demo data:
+
+```bash
+python manage.py sync_restaurants --city "Dallas" --state "TX" --limit 40
 ```
-The profile database contais information on user , like phone number ans saved addresses. This is queried to get information about the past addresses
 
-Order:
+## Architecture
+
 ```
-order_id = models.CharField(max_length=120, default=uuid.uuid4, unique=True, primary_key=True)
-    	timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
-    	delivery_address = models.CharField(max_length=200, blank=True)
-    	order_Desc= ArrayField(JSONField(),default=list, null=True);
-    	order_by = models.ForeignKey(User,null=True, blank=True,on_delete=models.CASCADE);
+React (Vite) ── JWT ──> Django REST API ──> PostgreSQL
+                             │                  │
+                             │            OutboxEvent table
+                             ├──> Stripe (PaymentIntents + signed webhooks)
+                             └──> OSM Overpass API (restaurant sync, offline-safe)
 ```
-  The order table contains information on the orders placed , the time, the delivery address if it is a delivery type of order, and the user who ordered it
-  
-  Card:
- ```
- customer = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.TextField(blank=True)
-    address_line_1 = models.TextField(blank=True)
-    address_line_1_check = models.CharField(max_length=15)
-    address_line_2 = models.TextField(blank=True)
-    address_city = models.TextField(blank=True)
-    address_state = models.TextField(blank=True)
-    address_country = models.TextField(blank=True)
-    address_zip = models.TextField(blank=True)
-    address_zip_check = models.CharField(max_length=15)
-    country = models.CharField(max_length=2, blank=True)
-    cvc_check = models.CharField(max_length=15, blank=True)
-    dynamic_last4 = models.CharField(max_length=4, blank=True)
-    tokenization_method = models.CharField(max_length=15, blank=True)
-    exp_month = models.IntegerField()
-    exp_year = models.IntegerField()
 
- ```
- The card table contains alll the information about the card used by the user
-  
-The cart details are sored in session as it will be cleared once a user has logged out and has not proceed to order food.
+Four Django apps, each owning one bounded concern:
 
-Stripe API is used to for payment processing.
+| App | Owns |
+|---|---|
+| `accounts` | Custom user, JWT auth, normalized addresses |
+| `restaurants` | Restaurant/menu catalog, OSM sync, menu seeding |
+| `carts` | One persistent DB cart per user (single-restaurant semantics) |
+| `orders` | Checkout, idempotency, payments, outbox events |
 
-This app thas been tested with valid test card details provoided by stripe.
-Django Template is used for the front end and Bootstrap is used to beautify the web pages. 
+## Engineering decisions worth reading
 
-To run the app you have to create a database in postgres / MYSQL or d3sql .I have used Postgres to address scalability issues,either Python 2.7 or 3.6 and the latestversion od Django 1.11.
+**Idempotent checkout.** `POST /api/orders` requires an `Idempotency-Key` header. Retries — double-clicks, network timeouts, client retries — return the original order. The guarantee is a database unique constraint on `(user, key)`, not application logic, so it holds under concurrent requests (the race is resolved by catching `IntegrityError` inside the transaction). See `orders/services.py`.
 
+**Transactional order creation.** The cart row is locked with `select_for_update`; order, order items, idempotency record, outbox event, and cart clearing commit atomically. Two concurrent checkouts of the same cart cannot both succeed.
+
+**Transactional outbox.** Order lifecycle events (`order.created`, `order.paid`) are written to an `OutboxEvent` table in the same transaction as the state change. A relay (worker or CDC) would publish these to Kafka; consumers dedupe on event id. This is the standard answer to "how do you atomically update a database *and* publish an event" without two-phase commit.
+
+**Identity from the token, never the payload.** Every order and address query is scoped to `request.user` extracted from the JWT. No endpoint accepts a user id from the client. The test suite includes a cross-tenant access test proving user B gets a 404 on user A's order.
+
+**Price snapshots.** Order items copy the menu item's name and price at purchase time. Repricing the menu can never rewrite order history.
+
+**No card data, ever.** The 2017 version stored card metadata in a `Card` table. That table is gone. Payment uses Stripe PaymentIntents: the browser confirms payment directly with Stripe, the backend stores only the intent id, and the webhook that marks orders paid is signature-verified and idempotent (Stripe redelivers webhooks; a second delivery is a no-op).
+
+**Money is integer cents.** Everywhere.
+
+**Owned data over API coupling.** The old app called EatStreet on every page view; when EatStreet's API died, the app died. Restaurants are now synced into local tables from OpenStreetMap's Overpass API (free, keyless), with menus generated from per-cuisine templates — no free API provides menus. `seed_demo` makes the whole app runnable offline.
+
+## API
+
+```
+POST   /api/auth/register/            create account
+POST   /api/auth/token/               obtain JWT pair
+POST   /api/auth/token/refresh/       refresh access token
+GET    /api/auth/me/                  current user
+CRUD   /api/auth/addresses/           saved addresses
+
+GET    /api/restaurants/?city=&cuisine=&search=
+GET    /api/restaurants/{slug}/       detail + menu
+
+GET    /api/cart/                     current cart
+DELETE /api/cart/                     clear cart
+POST   /api/cart/items/               {menu_item_id, quantity}
+
+POST   /api/orders/                   create (Idempotency-Key header required)
+GET    /api/orders/                   my orders
+GET    /api/orders/{id}/              my order detail
+
+POST   /api/payments/intent/          {order_id} -> {client_secret}
+POST   /api/payments/webhook/         Stripe webhook (signature-verified)
+```
+
+## Tests
+
+```bash
+cd backend && pytest
+```
+
+Six tests, each proving a claim above: idempotent retries, price snapshot immutability, cart clearing + outbox write, delivery validation, cross-tenant isolation, and webhook redelivery safety.
+
+## Configuration
+
+All secrets come from environment variables (see `backend/.env.example`). The repo contains no keys — the 2017 version committed its `SECRET_KEY` and database password, which is exactly the kind of thing this rewrite exists to fix.
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `SECRET_KEY` | Django signing key | insecure dev key |
+| `DATABASE_URL` | Postgres connection | SQLite file |
+| `STRIPE_SECRET_KEY` | test-mode Stripe key | unset (payments return 503) |
+| `STRIPE_WEBHOOK_SECRET` | webhook signature check | unset |
