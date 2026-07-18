@@ -5,6 +5,76 @@ import Ticket from "../components/Ticket";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 
+function ReviewSection({ slug, authed, onSaved }) {
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const load = () =>
+    api(`/restaurants/${slug}/reviews/`).then((d) => setReviews(d.results ?? d));
+
+  useEffect(() => {
+    load();
+  }, [slug]);
+
+  async function submit(e) {
+    e.preventDefault();
+    if (!authed) return navigate("/auth");
+    setError(null);
+    try {
+      await api(`/restaurants/${slug}/reviews/`, {
+        method: "POST",
+        body: { rating, comment },
+      });
+      setComment("");
+      await load();
+      onSaved();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <div className="menu-section">
+      <h2>Reviews</h2>
+      <form onSubmit={submit} style={{ marginBottom: 16 }}>
+        <label style={{ marginRight: 8 }}>
+          Your rating:{" "}
+          <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
+            {[5, 4, 3, 2, 1].map((n) => (
+              <option key={n} value={n}>{"★".repeat(n)}</option>
+            ))}
+          </select>
+        </label>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="What did you think?"
+          rows={2}
+          maxLength={2000}
+          style={{ display: "block", width: "100%", margin: "8px 0" }}
+        />
+        <button className="add-btn" type="submit">
+          {authed ? "Post review" : "Sign in to review"}
+        </button>
+        {error && <p className="muted" style={{ color: "crimson" }}>{error}</p>}
+      </form>
+      {reviews.length === 0 && <p className="muted">No reviews yet — be the first.</p>}
+      {reviews.map((r) => (
+        <div className="menu-item" key={r.id}>
+          <div>
+            <strong>{r.user}</strong>{" "}
+            <span className="muted">{"★".repeat(r.rating)}</span>
+            {r.comment && <div className="desc">{r.comment}</div>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function RestaurantPage() {
   const { slug } = useParams();
   const [restaurant, setRestaurant] = useState(null);
@@ -12,8 +82,10 @@ export default function RestaurantPage() {
   const { cart, setItem } = useCart();
   const navigate = useNavigate();
 
+  const loadRestaurant = () => api(`/restaurants/${slug}/`).then(setRestaurant);
+
   useEffect(() => {
-    api(`/restaurants/${slug}/`).then(setRestaurant);
+    loadRestaurant();
   }, [slug]);
 
   if (!restaurant) return <p className="muted" style={{ padding: 32 }}>Loading menu…</p>;
@@ -55,6 +127,7 @@ export default function RestaurantPage() {
             ))}
           </div>
         ))}
+        <ReviewSection slug={slug} authed={authed} onSaved={loadRestaurant} />
       </div>
       <aside>
         <Ticket />

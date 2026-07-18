@@ -1,5 +1,7 @@
 import uuid
 
+from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
 
@@ -59,6 +61,32 @@ class MenuSection(models.Model):
 
     def __str__(self) -> str:
         return f"{self.restaurant.name} — {self.name}"
+
+
+class Review(models.Model):
+    """A user's rating of a restaurant. One review per user per restaurant;
+    re-submitting replaces the old one. Restaurant.rating is the aggregate
+    of these (see services.submit_review) once at least one review exists.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    restaurant = models.ForeignKey(Restaurant, related_name="reviews", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="reviews", on_delete=models.CASCADE)
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    comment = models.TextField(max_length=2000, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["restaurant", "user"], name="one_review_per_user")
+        ]
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.user} → {self.restaurant.name}: {self.rating}★"
 
 
 class MenuItem(models.Model):
