@@ -1,6 +1,17 @@
 from rest_framework import serializers
 
+from .assistant import MAX_MESSAGE_CHARS
 from .models import MenuItem, MenuSection, Restaurant, Review
+
+
+class ChatHistoryItemSerializer(serializers.Serializer):
+    role = serializers.ChoiceField(choices=["user", "assistant"])
+    content = serializers.CharField(max_length=4000)
+
+
+class ChatRequestSerializer(serializers.Serializer):
+    message = serializers.CharField(max_length=MAX_MESSAGE_CHARS)
+    history = ChatHistoryItemSerializer(many=True, required=False)
 
 
 class ReviewSerializer(serializers.ModelSerializer):

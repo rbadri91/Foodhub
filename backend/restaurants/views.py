@@ -2,10 +2,14 @@ from functools import cached_property
 
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from . import assistant
 from .models import MenuItem, Restaurant
 from .serializers import (
+    ChatRequestSerializer,
     RestaurantDetailSerializer,
     RestaurantListSerializer,
     ReviewSerializer,
@@ -66,3 +70,26 @@ class ReviewListCreateView(generics.ListCreateAPIView):
             comment=serializer.validated_data.get("comment", ""),
         )
         serializer.instance = review
+
+
+class ChatView(APIView):
+    """POST /api/chat/ {message, history?} -> {reply}.
+
+    Public, like restaurant browsing. Domain logic lives in assistant.py.
+    """
+
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = ChatRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if not assistant.is_configured():
+            return Response(
+                {"detail": "Assistant is not configured. Set ANTHROPIC_API_KEY."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        reply = assistant.ask_assistant(
+            message=serializer.validated_data["message"],
+            history=serializer.validated_data.get("history", []),
+        )
+        return Response({"reply": reply})

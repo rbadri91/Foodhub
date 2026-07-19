@@ -1,4 +1,5 @@
 import { Link, Route, Routes } from "react-router-dom";
+import ChatWidget from "./components/ChatWidget";
 import { useAuth } from "./context/AuthContext";
 import { useCart } from "./context/CartContext";
 import AuthPage from "./pages/AuthPage";
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/auth" element={<AuthPage />} />
       </Routes>
+      <ChatWidget />
     </div>
   );
 }

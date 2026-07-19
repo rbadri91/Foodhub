@@ -115,6 +115,9 @@ CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
 
 # Stripe — test-mode keys via env only. Card data never touches this
 # server: the frontend confirms a PaymentIntent directly with Stripe.
+# Claude API — powers the restaurant assistant chatbot. Key via env only.
+ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default="")
+
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
 STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default="")
 STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
