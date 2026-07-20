@@ -16,3 +16,7 @@ dist/
 .vscode/
 .idea/
 .DS_Store
+backend/coverage.xml
+backend/.coverage
+.claude/
+.scannerwork/

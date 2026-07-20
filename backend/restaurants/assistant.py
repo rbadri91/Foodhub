@@ -33,29 +33,36 @@ def is_configured() -> bool:
     return bool(settings.ANTHROPIC_API_KEY)
 
 
+def _restaurant_header(r: Restaurant) -> str:
+    return (
+        f"## {r.name} ({r.cuisine}) — {r.address or ''} {r.city}, {r.state}\n"
+        f"rating {r.rating}/5, price level {r.price_level}/4, "
+        f"delivery: {'yes' if r.supports_delivery else 'no'}, "
+        f"pickup: {'yes' if r.supports_pickup else 'no'}"
+    )
+
+
+def _menu_lines(r: Restaurant) -> list[str]:
+    return [
+        f"- [{section.name}] {item.name}: ${item.price_cents / 100:.2f}"
+        + (f" — {item.description}" if item.description else "")
+        for section in r.sections.all()
+        for item in section.items.all()
+        if item.is_available
+    ]
+
+
 def _catalog() -> str:
     """Deterministic text catalog — stable ordering keeps the cache warm."""
-    lines = []
     restaurants = (
         Restaurant.objects.filter(is_active=True)
         .order_by("name")
         .prefetch_related("sections__items")
     )
+    lines = []
     for r in restaurants:
-        lines.append(
-            f"## {r.name} ({r.cuisine}) — {r.address or ''} {r.city}, {r.state}\n"
-            f"rating {r.rating}/5, price level {r.price_level}/4, "
-            f"delivery: {'yes' if r.supports_delivery else 'no'}, "
-            f"pickup: {'yes' if r.supports_pickup else 'no'}"
-        )
-        for section in r.sections.all():
-            for item in section.items.all():
-                if not item.is_available:
-                    continue
-                desc = f" — {item.description}" if item.description else ""
-                lines.append(
-                    f"- [{section.name}] {item.name}: ${item.price_cents / 100:.2f}{desc}"
-                )
+        lines.append(_restaurant_header(r))
+        lines.extend(_menu_lines(r))
         lines.append("")
     return "\n".join(lines)
 

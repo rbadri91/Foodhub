@@ -5,6 +5,7 @@ export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
+      id: "greeting",
       role: "assistant",
       content: "Hi! Craving something? Ask me which restaurant has it, or about any restaurant on FoodHub.",
     },
@@ -22,20 +23,23 @@ export default function ChatWidget() {
     const message = input.trim();
     if (!message || busy) return;
     setInput("");
-    const nextMessages = [...messages, { role: "user", content: message }];
+    const nextMessages = [...messages, { id: crypto.randomUUID(), role: "user", content: message }];
     setMessages(nextMessages);
     setBusy(true);
     try {
       const data = await api("/chat/", {
         method: "POST",
         // skip the canned greeting; send prior turns as history
-        body: { message, history: nextMessages.slice(1, -1) },
+        body: {
+          message,
+          history: nextMessages.slice(1, -1).map(({ role, content }) => ({ role, content })),
+        },
       });
-      setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
+      setMessages((m) => [...m, { id: crypto.randomUUID(), role: "assistant", content: data.reply }]);
     } catch (err) {
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: `Sorry, something went wrong: ${err.message}` },
+        { id: crypto.randomUUID(), role: "assistant", content: `Sorry, something went wrong: ${err.message}` },
       ]);
     } finally {
       setBusy(false);
@@ -51,8 +55,8 @@ export default function ChatWidget() {
             <button aria-label="Close chat" onClick={() => setOpen(false)}>×</button>
           </div>
           <div className="chat-messages" ref={scrollRef}>
-            {messages.map((m, i) => (
-              <div key={i} className={`chat-bubble ${m.role}`}>{m.content}</div>
+            {messages.map((m) => (
+              <div key={m.id} className={`chat-bubble ${m.role}`}>{m.content}</div>
             ))}
             {busy && <div className="chat-bubble assistant muted">Thinking…</div>}
           </div>

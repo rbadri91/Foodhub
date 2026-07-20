@@ -203,3 +203,9 @@ nav {
   color: #fff; font-weight: 600; cursor: pointer;
 }
 .chat-input button:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+
+/* Link-styled button (a11y: real button for actions, anchor only for navigation) */
+.linklike {
+  background: none; border: none; padding: 0; font: inherit;
+  color: inherit; cursor: pointer;
+}
