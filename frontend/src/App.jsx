@@ -21,7 +21,7 @@ export default function App() {
             <>
               <Link to="/orders">Orders</Link>
               <Link to="/checkout">Cart{itemCount > 0 && ` (${itemCount})`}</Link>
-              <a href="#" onClick={(e) => { e.preventDefault(); logout(); }}>Log out</a>
+              <button type="button" className="linklike" onClick={logout}>Log out</button>
             </>
           ) : (
             <Link to="/auth">Log in</Link>

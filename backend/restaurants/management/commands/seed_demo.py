@@ -39,9 +39,11 @@ class Command(BaseCommand):
                 defaults={
                     "cuisine": cuisine,
                     "state": opts["state"],
-                    "address": f"{rng.randint(100, 9900)} {rng.choice(['Main St', 'Elm St', 'Oak Ave', 'Commerce St', 'Greenville Ave'])}",
-                    "price_level": rng.randint(1, 3),
-                    "rating": round(rng.uniform(3.6, 4.9), 1),
+                    # Deterministic PRNG is intentional: this seeds fake demo
+                    # data, not security-sensitive values.
+                    "address": f"{rng.randint(100, 9900)} {rng.choice(['Main St', 'Elm St', 'Oak Ave', 'Commerce St', 'Greenville Ave'])}",  # NOSONAR(S2245)
+                    "price_level": rng.randint(1, 3),  # NOSONAR(S2245)
+                    "rating": round(rng.uniform(3.6, 4.9), 1),  # NOSONAR(S2245)
                 },
             )
             if was_created:

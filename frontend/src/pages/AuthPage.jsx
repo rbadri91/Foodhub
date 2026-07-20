@@ -45,10 +45,10 @@ export default function AuthPage() {
       </button>
       <p className="muted" style={{ marginTop: 14 }}>
         {mode === "login" ? "New here? " : "Already have an account? "}
-        <a href="#" style={{ color: "var(--basil)", fontWeight: 600 }}
-          onClick={(e) => { e.preventDefault(); setMode(mode === "login" ? "register" : "login"); }}>
+        <button type="button" className="linklike" style={{ color: "var(--basil)", fontWeight: 600 }}
+          onClick={() => setMode(mode === "login" ? "register" : "login")}>
           {mode === "login" ? "Create an account" : "Log in"}
-        </a>
+        </button>
       </p>
     </div>
   );

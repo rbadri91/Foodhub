@@ -2,6 +2,7 @@ import stripe
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -55,7 +56,10 @@ class PaymentIntentView(APIView):
         return Response({"client_secret": create_payment_intent(order)})
 
 
-@csrf_exempt
+# CSRF does not apply: Stripe calls this server-to-server with no session
+# cookie; authenticity is enforced by the webhook signature check below.
+@csrf_exempt  # NOSONAR(S4502)
+@require_POST
 def stripe_webhook(request):
     """Stripe webhook: signature-verified, idempotent.
 

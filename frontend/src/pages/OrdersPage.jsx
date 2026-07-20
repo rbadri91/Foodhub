@@ -25,8 +25,8 @@ export default function OrdersPage() {
             <span className={`status-badge status-${o.status}`}>{o.status.replace("_", " ")}</span>
           </div>
           <hr />
-          {o.items.map((i, idx) => (
-            <div className="ticket-row" key={idx}>
+          {o.items.map((i) => (
+            <div className="ticket-row" key={i.id}>
               <span>{i.quantity} × {i.name}</span>
               <span>{money(i.unit_price_cents * i.quantity)}</span>
             </div>
